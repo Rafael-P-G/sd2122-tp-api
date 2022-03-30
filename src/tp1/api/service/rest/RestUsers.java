@@ -18,6 +18,10 @@ import tp1.api.User;
 public interface RestUsers {
 
 	static final String PATH="/users";
+	//TODO ask if these constants are accepted 57956
+	public static final String QUERY = "query";
+	public static final String USER_ID = "userId";
+	public static final String PASSWORD = "password";
 
 	/**
 	 * Creates a new user.
@@ -70,7 +74,7 @@ public interface RestUsers {
 	 * Deletes the user identified by userId. The files owned by the user should be eventually removed (asynchronous
 	 * deletion is ok).
 	 * 
-	 * @param nauserId the userId of the user
+	 * @param userId the userId of the user
 	 * @param password password of the user
 	 * @return 200 the deleted user object, if the name exists and pwd matches the
 	 *         existing password 
