@@ -27,7 +27,8 @@ public class SearchUsersClient {
 
         System.out.println("Sending request to server.");
 
-        new RestUsersClient(URI.create(serverUrl)).searchUsers(pattern);
+        var result = new RestUsersClient(URI.create(serverUrl)).searchUsers(pattern);
+        System.out.println("Result: " + result);
 
     }
 

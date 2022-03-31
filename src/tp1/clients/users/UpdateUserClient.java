@@ -27,7 +27,7 @@ public class UpdateUserClient {
         System.out.println("Sending request to tp1.server.");
 
         var result = new  RestUsersClient(URI.create(serverUrl)).updateUser(userId, oldPassword, u);
-        System.out.println("Result: " + result);
+        System.out.println("Success, updated user with id: " + result.getUserId());
 
     }
 }

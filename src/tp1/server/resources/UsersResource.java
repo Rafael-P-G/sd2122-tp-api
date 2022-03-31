@@ -50,12 +50,6 @@ public class UsersResource implements RestUsers {
     public User getUser(String userId, String password) {
         Log.info("getUser : user = " + userId + "; pwd = " + password);
 
-        // Check if user is valid
-        if(userId == null || password == null) {
-            Log.info("UserId or passwrod null.");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST );
-        }
-
         User user = users.get(userId);
 
         // Check if user exists
@@ -78,7 +72,41 @@ public class UsersResource implements RestUsers {
     public User updateUser(String userId, String password, User user) {
         Log.info("updateUser : user = " + userId + "; pwd = " + password + " ; user = " + user);
         // TODO Complete method
-        throw new WebApplicationException( Response.Status.NOT_IMPLEMENTED );
+
+        // Check if user is valid
+        if(userId == null || password == null) {
+            Log.info("UserId or password null.");
+            throw new WebApplicationException( Response.Status.BAD_REQUEST );
+        }
+
+        User oldUser = users.get(userId);
+
+        // Check if old user exists
+        if( oldUser == null ) {
+            Log.info("User does not exist.");
+            throw new WebApplicationException( Response.Status.NOT_FOUND );
+        }
+
+        //Check if the password is correct
+        if( !oldUser.getPassword().equals( password)) {
+            Log.info("Password is incorrect.");
+            throw new WebApplicationException( Response.Status.FORBIDDEN );
+        }
+
+        String newEmail = user.getEmail();
+        String email = newEmail != null ? newEmail : oldUser.getEmail();
+
+        String newFullName = user.getFullName();
+        String fullName = newFullName != null ? newFullName : oldUser.getFullName();
+
+        String newPassword = user.getPassword();
+        String _password = newPassword != null ? newPassword : password;
+
+        User newUser = new User(userId, fullName, email, _password);
+
+        users.replace(userId, newUser);
+
+        return users.get(userId);
     }
 
 
@@ -86,7 +114,22 @@ public class UsersResource implements RestUsers {
     public User deleteUser(String userId, String password) {
         Log.info("deleteUser : user = " + userId + "; pwd = " + password);
         // TODO Complete method
-        throw new WebApplicationException( Response.Status.NOT_IMPLEMENTED );
+
+        User user = users.get(userId);
+
+        // Check if user exists
+        if( user == null ) {
+            Log.info("User does not exist.");
+            throw new WebApplicationException( Response.Status.NOT_FOUND );
+        }
+
+        //Check if the password is correct
+        if( !user.getPassword().equals( password)) {
+            Log.info("Password is incorrect.");
+            throw new WebApplicationException( Response.Status.FORBIDDEN );
+        }
+
+        return users.remove(userId);
     }
 
 
