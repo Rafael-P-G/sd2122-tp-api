@@ -15,7 +15,7 @@ public class RestDirectoryClient extends RestClient implements RestDirectory {
 
     public RestDirectoryClient(URI serverURI){
         super(serverURI);
-        target = client.target( serverURI ).path( RestUsers.PATH );
+        target = client.target( serverURI ).path( RestDirectory.PATH );
     }
 
     @Override
