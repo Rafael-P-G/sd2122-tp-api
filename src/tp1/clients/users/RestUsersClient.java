@@ -52,6 +52,13 @@ public class RestUsersClient extends RestClient implements RestUsers {
         });
     }
 
+    @Override
+    public List<User> searchUsers(String pattern) {
+        return super.reTry( () -> {
+            return clt_searchUsers( pattern );
+        });
+    }
+
     private User clt_deleteUser(String userId, String password) {
         Response r = target.path(userId)
                 .queryParam(RestUsers.PASSWORD, password).request()
@@ -64,13 +71,6 @@ public class RestUsersClient extends RestClient implements RestUsers {
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
         return null;
-    }
-
-    @Override
-    public List<User> searchUsers(String pattern) {
-        return super.reTry( () -> {
-            return clt_searchUsers( pattern );
-        });
     }
 
 
