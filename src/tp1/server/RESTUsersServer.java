@@ -2,11 +2,13 @@ package tp1.server;
 
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import tp1.server.discovery.Discovery;
 import tp1.server.resources.UsersResource;
 import tp1.server.util.GenericExceptionMapper;
 import util.Debug;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,8 +21,10 @@ public class RESTUsersServer {
     }
 
     public static final int PORT = 8080;
-    public static final String SERVICE = "UsersService";
+    public static final String SERVICE = "users";
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
+
+    private static Discovery discovery;
 
     public static void main(String[] args) {
         try {
@@ -35,6 +39,8 @@ public class RESTUsersServer {
             String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
             JdkHttpServerFactory.createHttpServer( URI.create(serverURI), config);
 
+            discovery = new Discovery(new InetSocketAddress(InetAddress.getLocalHost().getHostName(), PORT), SERVICE, serverURI);
+            discovery.start();
             Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
 
             //More code can be executed here...
