@@ -6,6 +6,7 @@ import org.glassfish.jersey.server.internal.process.Endpoint;
 import tp1.api.FileInfo;
 import tp1.api.service.rest.RestDirectory;
 import tp1.api.service.rest.RestUsers;
+import tp1.clients.RestClient;
 import tp1.server.RESTDirServer;
 
 import java.net.URI;
@@ -13,14 +14,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class DirectoryResources implements RestDirectory {
+public class DirectoryResources extends RestClient implements RestDirectory {
 
     private static Logger Log = Logger.getLogger(DirectoryResources.class.getName());
 
     private HashMap<String, FileInfo> files;
+    final WebTarget target;
 
-    public DirectoryResources() {
+    public DirectoryResources(URI serverURI)
+    {
+        super(serverURI);
         files = new HashMap<>();
+        target = client.target( serverURI ).path( RestUsers.PATH );
     }
 
     @Override
