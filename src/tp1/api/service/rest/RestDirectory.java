@@ -1,5 +1,6 @@
 package tp1.api.service.rest;
 
+import java.net.MalformedURLException;
 import java.util.*;
 
 import jakarta.ws.rs.Consumes;
@@ -39,7 +40,7 @@ public interface RestDirectory {
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.APPLICATION_JSON)
 	FileInfo writeFile(@PathParam("filename") String filename, byte []data, 
-			@PathParam("userId") String userId, @QueryParam("password") String password);
+			@PathParam("userId") String userId, @QueryParam("password") String password) throws MalformedURLException;
 
 	/**
 	 * Delete an existing file ("userId/filename"). 

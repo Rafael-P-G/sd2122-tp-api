@@ -30,10 +30,10 @@ public class WriteFileClient {
         //TODO complete class 57956
         //arg variables
         String serverUrl = args[0];
-        String filename = args[1];
-        String data = args[2];
-        String userId = args[3];
-        String password = args[4];
+        String userId = args[1];
+        String filename = args[2];
+        String password = args[3];
+        String data = args[4];
 
         Log.info("Sending request to server.");
 

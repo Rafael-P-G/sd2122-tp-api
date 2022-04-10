@@ -4,6 +4,7 @@ import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import tp1.server.discovery.Discovery;
 import tp1.server.resources.FilesResources;
+import tp1.server.util.CustomLoggingFilter;
 import tp1.server.util.GenericExceptionMapper;
 import util.Debug;
 
@@ -25,7 +26,7 @@ public class RESTFilesServer {
     public static final String SERVICE = "files";
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
 
-    private static Discovery discovery;
+    public static Discovery discovery;
 
     //TODO complete class 57956
 
@@ -35,7 +36,7 @@ public class RESTFilesServer {
 
             ResourceConfig config = new ResourceConfig();
             config.register(FilesResources.class);
-            //config.register(CustomLoggingFilter.class);
+            config.register(CustomLoggingFilter.class);
             config.register(GenericExceptionMapper.class);
 
             String ip = InetAddress.getLocalHost().getHostAddress();

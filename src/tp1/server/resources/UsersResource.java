@@ -25,19 +25,20 @@ public class UsersResource implements RestUsers {
 
     @Override
     public String createUser(User user) {
+
         Log.info("createUser : " + user);
 
         // Check if user data is valid
         if(user.getUserId() == null || user.getPassword() == null || user.getFullName() == null ||
                 user.getEmail() == null) {
             Log.info("User object invalid.");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST );
+            throw new WebApplicationException( Response.Status.BAD_REQUEST ); //400
         }
 
         // Check if userId already exists
         if( users.containsKey(user.getUserId())) {
             Log.info("User already exists.");
-            throw new WebApplicationException( Response.Status.CONFLICT );
+            throw new WebApplicationException( Response.Status.CONFLICT ); //409
         }
 
         //Add the user to the map of users

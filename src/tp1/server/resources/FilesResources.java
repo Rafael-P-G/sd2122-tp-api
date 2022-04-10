@@ -2,6 +2,7 @@ package tp1.server.resources;
 
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
+import tp1.api.FileInfo;
 import tp1.api.service.rest.RestFiles;
 
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class FilesResources implements RestFiles {
@@ -16,6 +18,8 @@ public class FilesResources implements RestFiles {
     private static final String STORAGE_PATH = "./filesStorage";
 
     private static Logger Log = Logger.getLogger(FilesResources.class.getName());
+
+    private HashMap<String, FileInfo> files;
 
     public FilesResources(){
     }
@@ -30,7 +34,7 @@ public class FilesResources implements RestFiles {
         }
 
         try {
-            String filePath = STORAGE_PATH + "/" + fileId + ".txt";
+            String filePath = STORAGE_PATH + "/" + fileId;
             File file = new File(filePath);
             file.createNewFile(); //creates file with fileId if there is none
 
@@ -52,7 +56,7 @@ public class FilesResources implements RestFiles {
             throw new WebApplicationException( Response.Status.NOT_FOUND);
         }
 
-        String filePath = STORAGE_PATH + "/" + fileId + ".txt";
+        String filePath = STORAGE_PATH + "/" + fileId;
         File file = new File(filePath);
 
         if(file.isFile()){
@@ -71,7 +75,7 @@ public class FilesResources implements RestFiles {
         }
 
         try {
-            String filePath = STORAGE_PATH + "/" + fileId + ".txt";
+            String filePath = STORAGE_PATH + "/" + fileId;
             File file = new File(filePath);
             byte[] buffer = Files.readAllBytes(file.toPath());
 

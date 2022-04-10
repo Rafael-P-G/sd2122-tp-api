@@ -2,6 +2,9 @@ package tp1.server.discovery;
 
 import java.io.IOException;
 import java.net.*;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -19,7 +22,7 @@ import java.util.logging.Logger;
 public class Discovery {
 	private static Logger Log = Logger.getLogger(Discovery.class.getName());
 
-	private Map<String, ReceivedInfo> receivedAnnouncements;
+	private Map<String, Map<String, LocalTime>> receivedAnnouncements;
 
 	static {
 		// addresses some multicast issues on some TCP/IP stacks
@@ -50,7 +53,7 @@ public class Discovery {
 		this.serviceName = serviceName;
 		this.serviceURI  = serviceURI;
 
-		receivedAnnouncements = new HashMap<String, ReceivedInfo>();
+		receivedAnnouncements = new HashMap<String, Map<String, LocalTime>>();
 	}
 	
 	/**
@@ -105,8 +108,15 @@ public class Discovery {
 								pkt.getAddress().getHostAddress(), msg);
 						var tokens = msg.split(DELIMITER);
 
-						if (tokens.length == 2) {
+						if (tokens.length == 2) { //0 is service name  and 1 is service uri
 							//TODO: to complete by recording the received information from the other node.
+							Map<String, LocalTime> serviceInfo = receivedAnnouncements.get(tokens[0]);
+							if(serviceInfo == null){
+								serviceInfo = new HashMap<>();
+							}
+							serviceInfo.put(tokens[1], LocalTime.now());
+							receivedAnnouncements.put(tokens[0], serviceInfo);
+							/*
 							try {
 								URI uri = new URI(tokens[1]);
 
@@ -124,6 +134,8 @@ public class Discovery {
 							} catch (URISyntaxException e) {
 								e.printStackTrace();
 							}
+
+							 */
 
 						}
 					} catch (IOException e) {
@@ -149,10 +161,24 @@ public class Discovery {
 	 * @return an array of URI with the service instances discovered. 
 	 * 
 	 */
-	public URI[] knownUrisOf(String serviceName) {
+	public Map<String, LocalTime> knownUrisOf(String serviceName) {
 		//TODO: You have to implement this!!
-		return receivedAnnouncements.get(serviceName).getServiceURIs();
-	}	
+
+		Map<String, LocalTime> announcements = receivedAnnouncements.get(serviceName);
+		return announcements;
+		/*
+		Set<String> stringUris = announcements.keySet();
+		URI[] uris = new URI[announcements.size()];
+
+		int i = 0;
+		for (String uri: stringUris) {
+			uris[i++] = URI.create(uri);
+		}
+
+		return uris;
+
+		 */
+	}
 	
 	private void joinGroupInAllInterfaces(MulticastSocket ms) throws SocketException {
 		Enumeration<NetworkInterface> ifs = NetworkInterface.getNetworkInterfaces();

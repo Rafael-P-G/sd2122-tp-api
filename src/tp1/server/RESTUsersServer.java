@@ -24,7 +24,7 @@ public class RESTUsersServer {
     public static final String SERVICE = "users";
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
 
-    private static Discovery discovery;
+    public static Discovery discovery;
 
     public static void main(String[] args) {
         try {
