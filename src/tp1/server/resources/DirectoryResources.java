@@ -27,11 +27,13 @@ public class DirectoryResources extends RestClient implements RestDirectory {
 
     //private HashMap<String, FileInfo> files;
     //private HashMap<URI, List<FileInfo>> filesByURI;
+    private Map<String, Set<FileInfo>> usersFiles;
 
     public DirectoryResources(URI serverURI)
     {
         super(serverURI);
         //files = new HashMap<>();
+        usersFiles = new HashMap<>();
     }
 
     @Override
@@ -104,6 +106,10 @@ public class DirectoryResources extends RestClient implements RestDirectory {
                 .post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
 
         if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity()){
+            FileInfo file = new FileInfo(userId, filename, "file url", new HashSet<>());
+            Set<FileInfo> files = new HashSet<>();
+            files.add(file);
+            usersFiles.put(userId, files);
             return r.readEntity(FileInfo.class);
         }
         else {

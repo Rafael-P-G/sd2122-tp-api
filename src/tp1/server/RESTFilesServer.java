@@ -36,7 +36,7 @@ public class RESTFilesServer {
 
             ResourceConfig config = new ResourceConfig();
             config.register(FilesResources.class);
-            config.register(CustomLoggingFilter.class);
+            //config.register(CustomLoggingFilter.class);
             config.register(GenericExceptionMapper.class);
 
             String ip = InetAddress.getLocalHost().getHostAddress();

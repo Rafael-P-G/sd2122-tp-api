@@ -4,6 +4,7 @@ import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import tp1.server.discovery.Discovery;
 import tp1.server.resources.UsersResource;
+import tp1.server.util.CustomLoggingFilter;
 import tp1.server.util.GenericExceptionMapper;
 import util.Debug;
 

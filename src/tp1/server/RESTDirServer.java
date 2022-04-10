@@ -1,13 +1,9 @@
 package tp1.server;
 
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import tp1.server.discovery.Discovery;
 import tp1.server.resources.DirectoryResources;
-import tp1.server.resources.UsersResource;
-import tp1.server.util.CustomLoggingFilter;
 import tp1.server.util.GenericExceptionMapper;
 import util.Debug;
 
@@ -37,6 +33,7 @@ public class RESTDirServer {
             config.register(DirectoryResources.class);
             //config.register(CustomLoggingFilter.class);
             config.register(GenericExceptionMapper.class);
+
             String ip = InetAddress.getLocalHost().getHostAddress();
             String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
             JdkHttpServerFactory.createHttpServer( URI.create(serverURI), config);

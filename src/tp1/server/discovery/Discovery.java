@@ -1,5 +1,7 @@
 package tp1.server.discovery;
 
+import tp1.server.RESTUsersServer;
+
 import java.io.IOException;
 import java.net.*;
 import java.sql.Time;
@@ -104,8 +106,8 @@ public class Discovery {
 						ms.receive(pkt);
 					
 						var msg = new String(pkt.getData(), 0, pkt.getLength());
-						System.out.printf( "FROM %s (%s) : %s\n", pkt.getAddress().getCanonicalHostName(), 
-								pkt.getAddress().getHostAddress(), msg);
+						//System.out.printf( "FROM %s (%s) : %s\n", pkt.getAddress().getCanonicalHostName(),
+								//pkt.getAddress().getHostAddress(), msg);
 						var tokens = msg.split(DELIMITER);
 
 						if (tokens.length == 2) { //0 is service name  and 1 is service uri
