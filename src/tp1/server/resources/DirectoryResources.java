@@ -1,5 +1,6 @@
 package tp1.server.resources;
 
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
@@ -17,10 +18,12 @@ import tp1.server.RESTUsersServer;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URL;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.Logger;
 
+@Singleton
 public class DirectoryResources extends RestClient implements RestDirectory {
 
     private static Logger Log = Logger.getLogger(DirectoryResources.class.getName());
@@ -29,9 +32,8 @@ public class DirectoryResources extends RestClient implements RestDirectory {
     //private HashMap<URI, List<FileInfo>> filesByURI;
     private Map<String, Set<FileInfo>> usersFiles;
 
-    public DirectoryResources(URI serverURI)
+    public DirectoryResources()
     {
-        super(serverURI);
         //files = new HashMap<>();
         usersFiles = new HashMap<>();
     }
@@ -70,46 +72,50 @@ public class DirectoryResources extends RestClient implements RestDirectory {
 
     private FileInfo clt_writeFile(String filename, byte[] data, String userId, String password) {
         Log.info("writeFile : " + data.toString());
+        System.out.println("Entrei no write file");
 
+        //Check if user is correct
         String serverURI = getOptimalURI(RESTUsersServer.SERVICE);
+        System.out.println("RestUserServer URI: " + serverURI);
         if(serverURI == null){
-            Log.info("User server URI not found");
+            System.out.println("User server URI not found");
             throw new WebApplicationException( Response.Status.BAD_REQUEST );
         }
-        WebTarget target = client.target( serverURI ).path( RestUsers.PATH );
 
-        Response r = target
-                .path(userId)
+        WebTarget target = client.target( serverURI ).path( RestUsers.PATH );
+        Response r = target.path(userId)
                 .queryParam(RestUsers.PASSWORD, password).request()
                 .accept(MediaType.APPLICATION_JSON)
-                .post(Entity.json(null));
+                .get();
 
-        if(r.getStatus() != Response.Status.OK.getStatusCode() || !r.hasEntity()){
-            Log.info("User invalid.");
+        if(r.getStatus() != Response.Status.OK.getStatusCode()){
+            System.out.println("User invalid. Status: " + r.getStatus());
             throw new WebApplicationException( Response.Status.BAD_REQUEST );
         }
-
         if(!r.readEntity(User.class).getPassword().equals(password)){
             Log.info("Password is incorrect.");
             throw new WebApplicationException( Response.Status.FORBIDDEN );
         }
 
+        //Post Data on file server
         serverURI = getOptimalURI(RESTFilesServer.SERVICE);
+        System.out.println("RestFilesServer URI: " + serverURI);
         if(serverURI == null){
             Log.info("File server URI not found");
             throw new WebApplicationException( Response.Status.BAD_REQUEST );
         }
+        //Post Data on file server
         target = client.target( serverURI ).path(RestFiles.PATH);
-
         r = target.path(filename).request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
 
         if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity()){
-            FileInfo file = new FileInfo(userId, filename, "file url", new HashSet<>());
+            FileInfo file = new FileInfo(userId, filename, target.path(filename).getUri().toString(), new HashSet<>());
             Set<FileInfo> files = new HashSet<>();
             files.add(file);
             usersFiles.put(userId, files);
+            System.out.println("I did it");
             return r.readEntity(FileInfo.class);
         }
         else {

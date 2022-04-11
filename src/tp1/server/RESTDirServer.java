@@ -27,7 +27,7 @@ public class RESTDirServer {
 
     public static void main(String[] args) {
         try {
-            Debug.setLogLevel( Level.INFO, Debug.SD2122 );
+            //Debug.setLogLevel( Level.INFO, Debug.SD2122 );
 
             ResourceConfig config = new ResourceConfig();
             config.register(DirectoryResources.class);

@@ -33,6 +33,15 @@ public class RestClient {
         this.client = ClientBuilder.newClient(config);
     }
 
+    public RestClient(){
+        this.config = new ClientConfig();
+
+        config.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT);
+        config.property( ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+
+        this.client = ClientBuilder.newClient(config);
+    }
+
     protected <T> T reTry(Supplier<T> func) {
         for (int i = 0; i < MAX_RETRIES; i++)
             try {

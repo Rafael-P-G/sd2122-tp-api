@@ -1,5 +1,6 @@
 package tp1.server.resources;
 
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import tp1.api.FileInfo;
@@ -10,12 +11,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+@Singleton
 public class FilesResources implements RestFiles {
 
-    private static final String STORAGE_PATH = "./filesStorage";
+    private static final String STORAGE_PATH = "./fileStorage";
 
     private static Logger Log = Logger.getLogger(FilesResources.class.getName());
 
@@ -36,9 +40,23 @@ public class FilesResources implements RestFiles {
         try {
             String filePath = STORAGE_PATH + "/" + fileId;
             File file = new File(filePath);
-            file.createNewFile(); //creates file with fileId if there is none
+            System.out.println(file.toPath());
+            if (!file.getParentFile().exists()) {
+                System.out.println("making dir");
+                file.getParentFile().mkdirs();
+            }
+            if (!file.exists()) {
+                System.out.println("making file");
+                file.createNewFile();
+            }
+            /*
+            if (!file.exists()) {
+                file.createNewFile();
+            }
 
-            FileOutputStream outputStream = new FileOutputStream(file);
+             */
+
+            FileOutputStream outputStream = new FileOutputStream(filePath);
             outputStream.write(data);
             outputStream.close();
         }

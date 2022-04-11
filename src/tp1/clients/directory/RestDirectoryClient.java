@@ -62,11 +62,9 @@ public class RestDirectoryClient extends RestClient implements RestDirectory {
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
 
-        //System.out.println(r.toString()); //TODO delete this line 57956
+        System.out.println(r.toString()); //TODO delete this line 57956
         if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return r.readEntity(FileInfo.class);
-
-
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
