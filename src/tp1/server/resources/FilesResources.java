@@ -1,5 +1,6 @@
 package tp1.server.resources;
 
+import com.sun.xml.ws.api.model.wsdl.WSDLOutput;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 @Singleton
 public class FilesResources implements RestFiles {
 
-    private static final String STORAGE_PATH = "./fileStorage";
+    private static final String STORAGE_PATH = "./fileStorage/";
 
     private static Logger Log = Logger.getLogger(FilesResources.class.getName());
 
@@ -38,27 +39,17 @@ public class FilesResources implements RestFiles {
         }
 
         try {
-            String filePath = STORAGE_PATH + "/" + fileId;
+            String filePath = fileId;
             File file = new File(filePath);
-            System.out.println(file.toPath());
-            if (!file.getParentFile().exists()) {
-                System.out.println("making dir");
-                file.getParentFile().mkdirs();
-            }
-            if (!file.exists()) {
-                System.out.println("making file");
-                file.createNewFile();
-            }
-            /*
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-             */
+            System.out.println("is directory: " + file.isDirectory());
+            System.out.println("is file: " + file.isFile());
+            System.out.println("does exist: " + file.exists());
+            file.createNewFile();
 
             FileOutputStream outputStream = new FileOutputStream(filePath);
             outputStream.write(data);
             outputStream.close();
+            System.out.println("data written");
         }
         catch (IOException e){
             e.printStackTrace();
@@ -74,7 +65,7 @@ public class FilesResources implements RestFiles {
             throw new WebApplicationException( Response.Status.NOT_FOUND);
         }
 
-        String filePath = STORAGE_PATH + "/" + fileId;
+        String filePath = STORAGE_PATH + fileId;
         File file = new File(filePath);
 
         if(file.isFile()){
@@ -93,7 +84,7 @@ public class FilesResources implements RestFiles {
         }
 
         try {
-            String filePath = STORAGE_PATH + "/" + fileId;
+            String filePath = STORAGE_PATH + fileId;
             File file = new File(filePath);
             byte[] buffer = Files.readAllBytes(file.toPath());
 

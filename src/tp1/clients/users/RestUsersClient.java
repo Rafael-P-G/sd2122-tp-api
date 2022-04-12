@@ -59,11 +59,6 @@ public class RestUsersClient extends RestClient implements RestUsers {
         });
     }
 
-    @Override
-    public User checkUser(String userId, String password) {
-        return null;
-    }
-
     private User clt_deleteUser(String userId, String password) {
         Response r = target.path(userId)
                 .queryParam(RestUsers.PASSWORD, password).request()

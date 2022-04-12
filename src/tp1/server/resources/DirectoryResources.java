@@ -47,27 +47,43 @@ public class DirectoryResources extends RestClient implements RestDirectory {
 
     @Override
     public void deleteFile(String filename, String userId, String password) {
-
+        super.reTry( () -> {
+                clt_deleteFile(filename, userId, userId, password);
+                return null;
+        });
     }
 
     @Override
     public void shareFile(String filename, String userId, String userIdShare, String password) {
-
+         super.reTry( () -> {
+             clt_shareFile(filename, userId, userIdShare, password);
+             return null;
+        });
     }
 
     @Override
     public void unshareFile(String filename, String userId, String userIdShare, String password) {
-
+        super.reTry( () -> {
+            clt_unshareFile(filename, userId, userIdShare, password);
+            return null;
+        });
     }
 
     @Override
     public byte[] getFile(String filename, String userId, String accUserId, String password) {
-        return new byte[0];
+
+        return super.reTry( () -> {
+             return clt_getFile(filename, userId, accUserId, password);
+        });
     }
+
 
     @Override
     public List<FileInfo> lsFile(String userId, String password) {
-        return null;
+
+       return super.reTry( () -> {
+            return clt_lsFile(userId, password);
+        });
     }
 
     private FileInfo clt_writeFile(String filename, byte[] data, String userId, String password) {
@@ -92,10 +108,6 @@ public class DirectoryResources extends RestClient implements RestDirectory {
             System.out.println("User invalid. Status: " + r.getStatus());
             throw new WebApplicationException( Response.Status.BAD_REQUEST );
         }
-        if(!r.readEntity(User.class).getPassword().equals(password)){
-            Log.info("Password is incorrect.");
-            throw new WebApplicationException( Response.Status.FORBIDDEN );
-        }
 
         //Post Data on file server
         serverURI = getOptimalURI(RESTFilesServer.SERVICE);
@@ -104,24 +116,44 @@ public class DirectoryResources extends RestClient implements RestDirectory {
             Log.info("File server URI not found");
             throw new WebApplicationException( Response.Status.BAD_REQUEST );
         }
-        //Post Data on file server
+
         target = client.target( serverURI ).path(RestFiles.PATH);
-        r = target.path(filename).request()
+        //String uniqueID = UUID.randomUUID().toString();
+        r = target.path( userId + "_" + filename)
+                .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
 
-        if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity()){
-            FileInfo file = new FileInfo(userId, filename, target.path(filename).getUri().toString(), new HashSet<>());
+        System.out.println(r.toString());
+        if(r.getStatus() == Response.Status.NO_CONTENT.getStatusCode()){
+            FileInfo file = new FileInfo(userId, filename, target.path( userId + "_" + filename).getUri().toString(), new HashSet<>());
             Set<FileInfo> files = new HashSet<>();
             files.add(file);
             usersFiles.put(userId, files);
             System.out.println("I did it");
-            return r.readEntity(FileInfo.class);
+            return file;
         }
         else {
             System.out.println("Error, HTTP error status: " + r.getStatus());
         }
 
+        return null;
+    }
+
+    private void clt_deleteFile(String filename, String userId, String userId1, String password) {
+    }
+
+    private void clt_shareFile(String filename, String userId, String userIdShare, String password) {
+    }
+
+    private void clt_unshareFile(String filename, String userId, String userIdShare, String password) {
+    }
+
+    private byte[] clt_getFile(String filename, String userId, String accUserId, String password) {
+        return null;
+    }
+
+    private List<FileInfo> clt_lsFile(String userId, String password) {
         return null;
     }
 
@@ -151,18 +183,6 @@ public class DirectoryResources extends RestClient implements RestDirectory {
         });
 
         return bestURIWrapper.bestURI;
-        /*
-        var emptiestWrapper = new Object(){  URI emptiest; };
-        var minWrapper = new Object(){ int min = 0; };
-        filesByURI.forEach((k, v) -> {
-            if(minWrapper.min < 0) minWrapper.min = v.size();
-
-            if(v.size() < minWrapper.min)
-                emptiestWrapper.emptiest = k;
-                });
-        return emptiestWrapper.emptiest;
-
-         */
     }
 }
 
