@@ -18,7 +18,6 @@ import tp1.api.User;
 public interface RestUsers {
 
 	static final String PATH="/users";
-	//TODO ask if these constants are accepted 57956
 	public static final String QUERY = "query";
 	public static final String USER_ID = "userId";
 	public static final String PASSWORD = "password";

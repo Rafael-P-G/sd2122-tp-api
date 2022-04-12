@@ -1,11 +1,10 @@
 package tp1.server.resources;
 
-
-import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import tp1.api.User;
-import tp1.api.service.rest.RestUsers;
+import tp1.api.service.util.Result;
+import tp1.api.service.util.Result.ErrorCode;
 import tp1.api.service.util.Users;
 
 import java.util.ArrayList;
@@ -14,93 +13,68 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-@Singleton
-public class UsersResource implements RestUsers {
+public class JavaUsers implements Users {
+    private static Logger Log = Logger.getLogger(UsersResource.class.getName());
+
+    /*
+    esta classe vai ser equivalente ao UsersResources -> vai conter a logica do programa
+     */
 
     private final Map<String,User> users = new HashMap<>();
 
-    private static Logger Log = Logger.getLogger(UsersResource.class.getName());
-
-    final Users impl = new JavaUsers();
-
-    public UsersResource() {
-
-    }
+    public JavaUsers() {}
 
     @Override
-    public String createUser(User user) {
+    public Result<String> createUser(User user) {
         Log.info("createUser : " + user);
 
-        var result = impl.createUser( user );
-        if( result.isOK() )
-            return result.value();
-        else
-        throw new WebApplicationException(result.error().name());
-
-        /*
         // Check if user data is valid
         if(user.getUserId() == null || user.getPassword() == null || user.getFullName() == null ||
                 user.getEmail() == null) {
             Log.info("User object invalid.");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST ); //400
+            return Result.error(ErrorCode.BAD_REQUEST);
         }
 
         // Check if userId already exists
         if( users.containsKey(user.getUserId())) {
             Log.info("User already exists.");
-            throw new WebApplicationException( Response.Status.CONFLICT ); //409
+            return Result.error(ErrorCode.CONFLICT);
         }
 
         //Add the user to the map of users
         users.put(user.getUserId(), user);
-        return user.getUserId();
-         */
+        return Result.ok(user.getUserId());
     }
 
-
     @Override
-    public User getUser(String userId, String password) {
+    public Result<User> getUser(String userId, String password) {
         Log.info("getUser : user = " + userId + "; pwd = " + password);
 
-        var result = impl.getUser(userId, password);
-        if( result.isOK() )
-            return result.value();
-        else
-            throw new WebApplicationException(result.error().name());
-        /*
         User user = users.get(userId);
 
         // Check if user exists
         if( user == null ) {
             Log.info("User does not exist.");
-            throw new WebApplicationException( Response.Status.NOT_FOUND );
+            return Result.error(ErrorCode.NOT_FOUND);
         }
 
         //Check if the password is correct
         if( !user.getPassword().equals( password)) {
             Log.info("Password is incorrect.");
-            throw new WebApplicationException( Response.Status.FORBIDDEN );
+            return Result.error(ErrorCode.FORBIDDEN);
         }
 
-        return user;
-
-         */
+        return Result.ok(user);
     }
 
-
     @Override
-    public User updateUser(String userId, String password, User user) {
+    public Result<User> updateUser(String userId, String password, User user) {
         Log.info("updateUser : user = " + userId + "; pwd = " + password + " ; user = " + user);
-        var result = impl.updateUser(userId, password, user);
-        if( result.isOK() )
-            return result.value();
-        else
-        throw new WebApplicationException(result.error().name());
-        /*
+
         // Check if user is valid
         if(userId == null || password == null) {
             Log.info("UserId or password null.");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST );
+            return Result.error(ErrorCode.BAD_REQUEST);
         }
 
         User oldUser = users.get(userId);
@@ -108,13 +82,13 @@ public class UsersResource implements RestUsers {
         // Check if old user exists
         if( oldUser == null ) {
             Log.info("User does not exist.");
-            throw new WebApplicationException( Response.Status.NOT_FOUND );
+            return Result.error(ErrorCode.NOT_FOUND);
         }
 
         //Check if the password is correct
         if( !oldUser.getPassword().equals( password)) {
             Log.info("Password is incorrect.");
-            throw new WebApplicationException( Response.Status.FORBIDDEN );
+            return Result.error(ErrorCode.FORBIDDEN);
         }
 
         String newEmail = user.getEmail();
@@ -130,58 +104,37 @@ public class UsersResource implements RestUsers {
 
         users.replace(userId, newUser);
 
-        return users.get(userId);
-
-         */
+        return Result.ok(users.get(userId));
     }
 
-
     @Override
-    public User deleteUser(String userId, String password) {
+    public Result<User> deleteUser(String userId, String password) {
         Log.info("deleteUser : user = " + userId + "; pwd = " + password);
 
-        var result = impl.deleteUser(userId, password);
-        if( result.isOK() )
-            return result.value();
-        else
-            throw new WebApplicationException(result.error().name());
-
-        /*
         User user = users.get(userId);
 
         // Check if user exists
         if( user == null ) {
             Log.info("User does not exist.");
-            throw new WebApplicationException( Response.Status.NOT_FOUND );
+            return Result.error(ErrorCode.NOT_FOUND);
         }
 
         //Check if the password is correct
         if( !user.getPassword().equals( password)) {
             Log.info("Password is incorrect.");
-            throw new WebApplicationException( Response.Status.FORBIDDEN );
+            return Result.error(ErrorCode.FORBIDDEN);
         }
 
-        return users.remove(userId);
-
-         */
+        return Result.ok(users.get(users.remove(userId)));
     }
 
-
     @Override
-    public List<User> searchUsers(String pattern) {
+    public Result<List<User>> searchUsers(String pattern) {
         Log.info("searchUsers : pattern = " + pattern);
         // Check if user is valid
-
-        var result = impl.searchUsers(pattern);
-        if( result.isOK() )
-            return result.value();
-        else
-            throw new WebApplicationException(result.error().name());
-
-        /*
         if(pattern == null) {
             Log.info("pattern is null.");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST );
+            return Result.error(ErrorCode.BAD_REQUEST);
         }
 
         List<User> userL = new ArrayList<>();
@@ -192,11 +145,7 @@ public class UsersResource implements RestUsers {
             }
         });
 
-        return  userL;
-
-         */
+        return  Result.ok(userL);
     }
 
-
 }
-

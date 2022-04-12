@@ -1,5 +1,6 @@
 package tp1.server.discovery;
 
+import tp1.server.RESTDirServer;
 import tp1.server.RESTUsersServer;
 
 import java.io.IOException;
@@ -24,8 +25,6 @@ import java.util.logging.Logger;
 public class Discovery {
 	private static Logger Log = Logger.getLogger(Discovery.class.getName());
 
-	private Map<String, Map<String, LocalTime>> receivedAnnouncements;
-
 	static {
 		// addresses some multicast issues on some TCP/IP stacks
 		System.setProperty("java.net.preferIPv4Stack", "true");
@@ -45,6 +44,8 @@ public class Discovery {
 	private InetSocketAddress addr;
 	private String serviceName;
 	private String serviceURI;
+
+	private Map<String, Map<String, LocalTime>> receivedAnnouncements;
 
 	/**
 	 * @param  serviceName the name of the service to announce
@@ -118,26 +119,6 @@ public class Discovery {
 							}
 							serviceInfo.put(tokens[1], LocalTime.now());
 							receivedAnnouncements.put(tokens[0], serviceInfo);
-							/*
-							try {
-								URI uri = new URI(tokens[1]);
-
-							if(receivedAnnouncements.containsKey(tokens[0])){
-								ReceivedInfo ri = receivedAnnouncements.get(tokens[0]);
-								ri.addServiceURI(uri);
-								//ri.setTime(time);
-							}
-							else {
-								int time = 0; //change this later
-								ReceivedInfo ri = new ReceivedInfo(uri, time);
-								receivedAnnouncements.put(tokens[0], ri);
-							}
-
-							} catch (URISyntaxException e) {
-								e.printStackTrace();
-							}
-
-							 */
 
 						}
 					} catch (IOException e) {
@@ -164,22 +145,37 @@ public class Discovery {
 	 * 
 	 */
 	public Map<String, LocalTime> knownUrisOf(String serviceName) {
-		//TODO: You have to implement this!!
 
 		Map<String, LocalTime> announcements = receivedAnnouncements.get(serviceName);
 		return announcements;
-		/*
-		Set<String> stringUris = announcements.keySet();
-		URI[] uris = new URI[announcements.size()];
+	}
 
-		int i = 0;
-		for (String uri: stringUris) {
-			uris[i++] = URI.create(uri);
-		}
+	public String getOptimalURI(String serviceName){
 
-		return uris;
+		Map<String, LocalTime> urisFiles = knownUrisOf(serviceName);
 
-		 */
+		var bestURIWrapper = new Object(){String bestURI; int bestTime = -1;};
+		final int currentTime = LocalTime.now().toSecondOfDay();
+
+		urisFiles.forEach((k, v) ->{
+			if(bestURIWrapper.bestURI == null){
+				bestURIWrapper.bestURI = k;
+			}
+			else {
+				if(bestURIWrapper.bestTime == -1){
+					bestURIWrapper.bestTime = v.toSecondOfDay();
+				}
+				else {
+					int timeDif = currentTime - v.toSecondOfDay();
+					if(timeDif < bestURIWrapper.bestTime){
+						bestURIWrapper.bestTime = v.toSecondOfDay();
+						bestURIWrapper.bestURI = k;
+					}
+				}
+			}
+		});
+
+		return bestURIWrapper.bestURI;
 	}
 	
 	private void joinGroupInAllInterfaces(MulticastSocket ms) throws SocketException {
