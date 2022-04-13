@@ -55,6 +55,7 @@ public class JavaUsers implements Users {
         // Check if user exists
         if( user == null ) {
             Log.info("User does not exist.");
+            System.out.println("User non existant");
             return Result.error(ErrorCode.NOT_FOUND);
         }
 
@@ -125,7 +126,8 @@ public class JavaUsers implements Users {
             return Result.error(ErrorCode.FORBIDDEN);
         }
 
-        return Result.ok(users.get(users.remove(userId)));
+        users.remove(userId);
+        return Result.ok(user);
     }
 
     @Override
@@ -146,6 +148,14 @@ public class JavaUsers implements Users {
         });
 
         return  Result.ok(userL);
+    }
+
+    @Override
+    public Result<Void> checkUser(String userId) {
+        if(!users.containsKey(userId))
+            return Result.error(ErrorCode.NOT_FOUND);
+
+        return Result.ok();
     }
 
 }

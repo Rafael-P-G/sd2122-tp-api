@@ -2,6 +2,11 @@ package tp1.api.service.util;
 
 import java.util.List;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import tp1.api.User;
 
 public interface Users {
@@ -42,7 +47,7 @@ public interface Users {
 	Result<User> updateUser(String userId, String password, User user);
 	
 	/**
-	 * Deletes the user identified by userId. The users owned by the user should be eventually removed (asynchronous
+	 * Deletes the user identified by userId. The files owned by the user should be eventually removed (asynchronous
 	 * deletion is ok).
 	 * @param userId the userId of the user
 	 * @param password password of the user
@@ -61,4 +66,14 @@ public interface Users {
 	 *         400 otherwise.
 	 */
 	Result<List<User>> searchUsers(String pattern);
+
+	/**
+	 * Check if user exists.
+	 * @param userId the userId of the user
+	 * @return 200 the user object, if the userId exists and password matches the existing
+	 *         password
+	 *         404 if no user exists with the provided userId
+	 *         400 otherwise.
+	 */
+	Result<Void> checkUser(String userId);
 }

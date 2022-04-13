@@ -19,7 +19,7 @@ public class DeleteUserClient {
         System.out.println("Sending request to tp1.server.");
 
         var result = new RestUsersClient(URI.create(serverUrl)).deleteUser(userId, password);
-        System.out.println("Success, deleted user with id: " + result.getUserId());
+        System.out.println("Success, deleted user with id: " + result.value().getUserId());
 
     }
 }

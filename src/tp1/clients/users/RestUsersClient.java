@@ -14,7 +14,7 @@ import tp1.clients.RestClient;
 import java.net.URI;
 import java.util.List;
 
-public class RestUsersClient  extends RestClient implements Users /*implements RestUsers*/ {
+public class RestUsersClient  extends RestClient implements Users {
 
     final WebTarget target;
 
@@ -32,7 +32,6 @@ public class RestUsersClient  extends RestClient implements Users /*implements R
 
     @Override
     public Result<User> getUser(String userId, String password) {
-        // TODO Auto-generated method stub
         return super.reTry( () -> {
             return clt_getUser( userId, password );
         });
@@ -40,7 +39,6 @@ public class RestUsersClient  extends RestClient implements Users /*implements R
 
     @Override
     public Result<User> updateUser(String userId, String password, User user) {
-        // TODO Auto-generated method stub
         return super.reTry( () -> {
             return clt_updateUser(userId, password, user);
         });
@@ -48,7 +46,6 @@ public class RestUsersClient  extends RestClient implements Users /*implements R
 
     @Override
     public Result<User> deleteUser(String userId, String password) {
-        // TODO Auto-generated method stub
         return super.reTry( () -> {
             return clt_deleteUser(userId, password);
         });
@@ -58,6 +55,13 @@ public class RestUsersClient  extends RestClient implements Users /*implements R
     public Result<List<User>> searchUsers(String pattern) {
         return super.reTry( () -> {
             return clt_searchUsers( pattern );
+        });
+    }
+
+    @Override
+    public Result<Void> checkUser(String userId) {
+        return super.reTry( () -> {
+            return clt_checkUsers( userId );
         });
     }
 
@@ -113,7 +117,6 @@ public class RestUsersClient  extends RestClient implements Users /*implements R
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
 
-        System.out.println(r.toString()); //TODO delete this line 57965
         if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
             return Result.ok(r.readEntity(User.class));
         else
@@ -130,6 +133,21 @@ public class RestUsersClient  extends RestClient implements Users /*implements R
 
         if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
             return Result.ok(r.readEntity(User.class));
+        else
+            System.out.println("Error, HTTP error status: " + r.getStatus() );
+
+        return null;
+    }
+
+    private Result<Void> clt_checkUsers(String userId) {
+        Response r = target
+                .path(userId)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get();
+
+        if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
+            return Result.ok();
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 

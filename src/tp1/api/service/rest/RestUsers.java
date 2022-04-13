@@ -13,6 +13,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import tp1.api.User;
+import tp1.api.service.util.Result;
 
 @Path(RestUsers.PATH)
 public interface RestUsers {
@@ -96,5 +97,21 @@ public interface RestUsers {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	List<User> searchUsers(@QueryParam("query") String pattern);
+
+	/**
+	 * Check if user exists.
+	 *
+	 * @param userId the userId of the user
+	 * @return 200 the user object, if the userId exists and password matches the existing
+	 *         password
+	 *         404 if no user exists with the provided userId
+	 *         400 otherwise.
+	 */
+	@GET
+	@Path("/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	void checkUser(@PathParam("userId") String userId);
+
+
 
 }
