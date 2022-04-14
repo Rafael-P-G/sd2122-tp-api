@@ -1,6 +1,5 @@
-package tp1.clients.users;
+package tp1.clients.users.rest;
 
-import tp1.api.User;
 import util.Debug;
 
 import java.io.IOException;
@@ -8,7 +7,7 @@ import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CreateUserClient {
+public class GetUserClient {
 
     private static Logger Log = Logger.getLogger(CreateUserClient.class.getName());
 
@@ -20,22 +19,18 @@ public class CreateUserClient {
 
         Debug.setLogLevel( Level.FINE, Debug.SD2122 );
 
-        if (args.length != 5) {
-            System.err.println("Use: java tp1.clients.users.CreateUserClient url userId fullName email password");
+        if (args.length != 3) {
+            System.err.println("Use: java tp1.clients.users.rest.GetUserClient url userId password");
             return;
         }
 
         String serverUrl = args[0];
         String userId = args[1];
-        String fullName = args[2];
-        String email = args[3];
-        String password = args[4];
-
-        User u = new User(userId, fullName, email, password);
+        String password = args[2];
 
         Log.info("Sending request to server.");
 
-        var result = new RestUsersClient(URI.create(serverUrl)).createUser(u);
+        var result = new RestUsersClient(URI.create(serverUrl)).getUser(userId, password);
         System.out.println("Result: " + result);
     }
 

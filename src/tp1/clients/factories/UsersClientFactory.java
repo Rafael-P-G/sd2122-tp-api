@@ -1,14 +1,13 @@
 package tp1.clients.factories;
 
 import tp1.api.service.util.Users;
-import tp1.clients.users.RestUsersClient;
+import tp1.clients.users.rest.RestUsersClient;
 import tp1.server.RESTUsersServer;
 import tp1.server.discovery.Discovery;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
 public class UsersClientFactory {

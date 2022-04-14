@@ -1,4 +1,4 @@
-package tp1.clients.users;
+package tp1.clients.users.rest;
 
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;

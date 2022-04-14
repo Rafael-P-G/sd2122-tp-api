@@ -1,22 +1,16 @@
-package tp1.server.resources;
+package tp1.server.resources.rest;
 
-import com.sun.xml.ws.api.model.wsdl.WSDLOutput;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
-import tp1.api.FileInfo;
 import tp1.api.service.rest.RestFiles;
-import tp1.api.service.util.Directory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 

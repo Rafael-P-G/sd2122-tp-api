@@ -1,4 +1,4 @@
-package tp1.server.resources;
+package tp1.server.resources.rest;
 
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;

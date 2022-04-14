@@ -1,4 +1,4 @@
-package tp1.clients.users;
+package tp1.clients.users.rest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -8,7 +8,7 @@ public class DeleteUserClient {
     public static void main(String[] args) throws IOException {
 
         if( args.length != 3) {
-            System.err.println( "Use: java sd2122.tp1.clients.users.DeleteUserClient url userId password");
+            System.err.println( "Use: java sd2122.tp1.clients.users.rest.DeleteUserClient url userId password");
             return;
         }
 

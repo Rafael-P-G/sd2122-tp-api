@@ -3,14 +3,12 @@ package tp1.server;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import tp1.server.discovery.Discovery;
-import tp1.server.resources.DirectoryResources;
+import tp1.server.resources.rest.DirectoryResources;
 import tp1.server.util.GenericExceptionMapper;
-import util.Debug;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RESTDirServer {

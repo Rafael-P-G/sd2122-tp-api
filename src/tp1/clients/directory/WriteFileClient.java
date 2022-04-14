@@ -1,13 +1,8 @@
 package tp1.clients.directory;
 
-import tp1.api.FileInfo;
-import tp1.clients.users.RestUsersClient;
 import util.Debug;
 
-import java.io.File;
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

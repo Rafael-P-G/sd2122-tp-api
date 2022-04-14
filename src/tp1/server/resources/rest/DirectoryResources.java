@@ -1,4 +1,4 @@
-package tp1.server.resources;
+package tp1.server.resources.rest;
 
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
@@ -9,12 +9,9 @@ import tp1.api.service.util.Directory;
 import tp1.api.service.util.Files;
 import tp1.api.service.util.Result;
 import tp1.api.service.util.Users;
-import tp1.clients.RestClient;
 import tp1.clients.factories.FilesClientFactory;
 import tp1.clients.factories.UsersClientFactory;
-import tp1.server.RESTDirServer;
 
-import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.Logger;
 

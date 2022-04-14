@@ -3,15 +3,12 @@ package tp1.server;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import tp1.server.discovery.Discovery;
-import tp1.server.resources.UsersResource;
-import tp1.server.util.CustomLoggingFilter;
+import tp1.server.resources.rest.UsersResource;
 import tp1.server.util.GenericExceptionMapper;
-import util.Debug;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RESTUsersServer {
@@ -30,7 +27,7 @@ public class RESTUsersServer {
     public static void main(String[] args) {
         try {
             //Debug.setLogLevel( Level.INFO, Debug.SD2122 );
-
+            System.out.println("Estrou no servidor");
             ResourceConfig config = new ResourceConfig();
             config.register(UsersResource.class);
             //config.register(CustomLoggingFilter.class);
@@ -44,6 +41,7 @@ public class RESTUsersServer {
             discovery.start();
             Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
 
+            System.out.println("BAtucar esse server");
             //More code can be executed here...
         } catch( Exception e) {
             Log.severe(e.getMessage());

@@ -1,9 +1,7 @@
 package tp1.clients.factories;
 
 import tp1.api.service.util.Directory;
-import tp1.api.service.util.Users;
 import tp1.clients.directory.RestDirectoryClient;
-import tp1.clients.users.RestUsersClient;
 import tp1.server.RESTDirServer;
 import tp1.server.discovery.Discovery;
 

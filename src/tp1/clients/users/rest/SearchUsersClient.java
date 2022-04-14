@@ -1,4 +1,4 @@
-package tp1.clients.users;
+package tp1.clients.users.rest;
 
 import util.Debug;
 
