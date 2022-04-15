@@ -14,7 +14,7 @@ public class UsersClientFactory {
     private static Logger Log = Logger.getLogger(RESTUsersServer.class.getName());
 
     public static final int PORT = 8080;
-    public static final String SERVICE = "users";
+    public static final String SERVICE = "factory";
 
     private static Discovery discovery;
 
@@ -34,4 +34,5 @@ public class UsersClientFactory {
        else
         return null; //new SoapUsersClient( serverURI );
     }
+
 }

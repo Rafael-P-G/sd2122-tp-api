@@ -141,9 +141,7 @@ public class RestUsersClient  extends RestClient implements Users {
 
     private Result<Void> clt_checkUsers(String userId) {
         Response r = target
-                .path(userId)
                 .request()
-                .accept(MediaType.APPLICATION_JSON)
                 .get();
 
         if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())

@@ -108,8 +108,6 @@ public interface RestUsers {
 	 *         400 otherwise.
 	 */
 	@GET
-	@Path("/{userId}")
-	@Produces(MediaType.APPLICATION_JSON)
 	void checkUser(@PathParam("userId") String userId);
 
 

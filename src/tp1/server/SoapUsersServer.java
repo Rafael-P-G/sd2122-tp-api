@@ -1,4 +1,4 @@
-package tp1.server.resources.soap;
+package tp1.server;
 
 
 import java.net.InetAddress;
@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.xml.ws.Endpoint;
+import tp1.server.resources.soap.SoapUsersWebService;
 
 public class SoapUsersServer {
 
