@@ -15,7 +15,7 @@ public class UsersClientFactory {
 
     public static final int PORT = 8080;
     public static final String SERVICE = "factory";
-    public static final String SERVICETORETURN = "users";
+    public static final String SERVICE_TO_RETURN = "users";
 
     public static Discovery discovery;
 
@@ -29,7 +29,7 @@ public class UsersClientFactory {
     }
 
     public static Users getClient() {
-        var serverURI = discovery.getOptimalURI(SERVICETORETURN); // use discovery to find a uri of the Users service;
+        var serverURI = discovery.getOptimalURI(SERVICE_TO_RETURN); // use discovery to find a uri of the Users service;
         if( serverURI.endsWith("rest"))
             return new RestUsersClient(URI.create(serverURI) );
        else

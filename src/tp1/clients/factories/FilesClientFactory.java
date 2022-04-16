@@ -17,7 +17,8 @@ public class FilesClientFactory {
     private static Logger Log = Logger.getLogger(RESTFilesServer.class.getName());
 
     public static final int PORT = 8080;
-    public static final String SERVICE = "files";
+    public static final String SERVICE = "factory";
+    public static final String SERVICE_TO_RETURN = "files";
 
     private static Discovery discovery;
 
@@ -31,8 +32,8 @@ public class FilesClientFactory {
     }
 
     public static Files getClient() {
-        System.out.println("GETCLIENT URIS" + discovery.knownUrisOf(SERVICE));
-        var serverURI = discovery.getOptimalURI(SERVICE); // use discovery to find a uri of the Users service;
+        System.out.println("GETCLIENT URIS" + discovery.knownUrisOf(SERVICE_TO_RETURN));
+        var serverURI = discovery.getOptimalURI(SERVICE_TO_RETURN); // use discovery to find a uri of the Users service;
         if( serverURI.endsWith("rest")){
             System.out.println("ENDED WITH REST");
             return new RestFilesClient(URI.create(serverURI) );

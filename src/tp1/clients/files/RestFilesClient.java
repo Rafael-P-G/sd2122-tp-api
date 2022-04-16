@@ -37,7 +37,9 @@ public class RestFilesClient extends RestClient implements Files {
 
     @Override
     public Result<byte[]> getFile(String fileId, String token) {
-        return null;
+        return super.reTry( () -> {
+            return clt_getFile( fileId, token );
+        });
     }
 
     private Result<Void> clt_writeFile(String fileId, byte[] data, String token) {
@@ -57,6 +59,19 @@ public class RestFilesClient extends RestClient implements Files {
 
     private Result<Void> clt_deleteFile(String fileId, String token) {
 
+        Response r = target.path( fileId)
+                .request()
+                .delete();
+
+        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+            return Result.ok();
+        else
+            System.out.println("Error, HTTP error status: " + r.getStatus() );
+
+        return null;
+    }
+
+    private Result<byte[]> clt_getFile(String fileId, String token) {
         Response r = target.path( fileId)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
