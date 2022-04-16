@@ -2,6 +2,8 @@ package tp1.server;
 
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import tp1.clients.factories.FilesClientFactory;
+import tp1.clients.factories.UsersClientFactory;
 import tp1.server.discovery.Discovery;
 import tp1.server.resources.rest.DirectoryResources;
 import tp1.server.util.GenericExceptionMapper;
@@ -21,6 +23,8 @@ public class RESTDirServer {
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
 
     public static Discovery discovery;
+    public static UsersClientFactory usersFactory;// = new UsersClientFactory();
+    public static FilesClientFactory filesFactory;// = new FilesClientFactory();
 
 
     public static void main(String[] args) {
@@ -38,6 +42,8 @@ public class RESTDirServer {
 
             discovery = new Discovery(new InetSocketAddress(InetAddress.getLocalHost().getHostName(), PORT), SERVICE, serverURI);
             discovery.start();
+            usersFactory = new UsersClientFactory();
+            filesFactory = new FilesClientFactory();
             Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
             //More code can be executed here...
         } catch( Exception e) {

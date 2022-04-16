@@ -11,6 +11,7 @@ import tp1.api.service.util.Result;
 import tp1.api.service.util.Users;
 import tp1.clients.factories.FilesClientFactory;
 import tp1.clients.factories.UsersClientFactory;
+import tp1.server.RESTDirServer;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -21,13 +22,12 @@ public class DirectoryResources implements RestDirectory {
     private static Logger Log = Logger.getLogger(DirectoryResources.class.getName());
 
     private final Directory impl = new JavaDirectory();
-    private final UsersClientFactory usersFactory = new UsersClientFactory();
-    private final FilesClientFactory filesFactory = new FilesClientFactory();
+    private UsersClientFactory usersFactory;// = new UsersClientFactory();
+    private FilesClientFactory filesFactory;// = new FilesClientFactory();
 
-    public DirectoryResources()
-    {
-        //usersClient = new UsersClientFactory().getClient();
-        //filesClient = new FilesClientFactory().getClient();
+    public DirectoryResources() throws InterruptedException {
+        usersFactory = RESTDirServer.usersFactory;
+        filesFactory = RESTDirServer.filesFactory;
     }
 
     @Override
@@ -39,6 +39,7 @@ public class DirectoryResources implements RestDirectory {
 
         String fileId = filename + "_" + userId;
         var filesClient = filesFactory.getClient();
+        if(filesClient == null) System.out.println("FILES CLIENT IS NULL");
         var writeFileResult = filesClient.writeFile(fileId, data, "");
         if( !writeFileResult.isOK() )
             throw new WebApplicationException(translateError(writeFileResult));

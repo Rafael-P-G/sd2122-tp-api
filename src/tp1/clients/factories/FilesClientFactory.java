@@ -31,9 +31,12 @@ public class FilesClientFactory {
     }
 
     public static Files getClient() {
+        System.out.println("GETCLIENT URIS" + discovery.knownUrisOf(SERVICE));
         var serverURI = discovery.getOptimalURI(SERVICE); // use discovery to find a uri of the Users service;
-        if( serverURI.endsWith("rest"))
+        if( serverURI.endsWith("rest")){
+            System.out.println("ENDED WITH REST");
             return new RestFilesClient(URI.create(serverURI) );
+        }
         else
             return null; //new SoapUsersClient( serverURI );
     }
