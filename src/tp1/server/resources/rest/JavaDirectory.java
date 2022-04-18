@@ -12,14 +12,11 @@ import java.util.*;
 
 public class JavaDirectory implements Directory {
 
-    private Map<String, Map<String, FileInfo>> usersFiles;
-    private Map<String, List<FileInfo>> filesUserAccess;
+    private final Map<String, Map<String, FileInfo>> usersFiles = new HashMap<>();
+    private final Map<String, List<FileInfo>> filesUserAccess = new HashMap<>();
 
     @Override
     public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
-
-        if(!usersFiles.containsKey(userId))
-            return Result.error(Result.ErrorCode.NOT_FOUND);
 
         if(password == null)
             return Result.error(Result.ErrorCode.FORBIDDEN);
@@ -29,7 +26,11 @@ public class JavaDirectory implements Directory {
         }
 
         //TODO how to get file URL
-        FileInfo file = new FileInfo(userId, filename, userId + "/" + filename, new HashSet<>());
+        FileInfo file = new FileInfo(userId,
+                filename,
+                "http://172.18.0.3:8080/rest/files/"+ userId + "_" + filename,
+                new HashSet<>());
+
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null){
             files = new HashMap<>();
@@ -121,8 +122,10 @@ public class JavaDirectory implements Directory {
         if(file == null)
             return Result.error(Result.ErrorCode.NOT_FOUND);
 
-        if(!file.getSharedWith().contains(accUserId))
-            return Result.error(Result.ErrorCode.FORBIDDEN);
+        if(!file.getSharedWith().contains(accUserId)) {
+            System.out.println("Oh no! The file is not shared with " + accUserId);
+            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
 
         //Redirect TODO check if is right
         throw new WebApplicationException(

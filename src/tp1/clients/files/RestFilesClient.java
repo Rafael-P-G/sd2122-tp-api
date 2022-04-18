@@ -48,11 +48,19 @@ public class RestFilesClient extends RestClient implements Files {
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
-
+        /*
         if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok();
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
+
+         */
+
+         if( r.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+            return Result.ok();
+        }else
+            System.out.println("Error, HTTP error status: " + r.getStatus() );
+
 
         return null;
     }

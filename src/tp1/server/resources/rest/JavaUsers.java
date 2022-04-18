@@ -1,5 +1,6 @@
 package tp1.server.resources.rest;
 
+import jdk.swing.interop.SwingInterOpUtils;
 import tp1.api.User;
 import tp1.api.service.util.Result;
 import tp1.api.service.util.Result.ErrorCode;
@@ -49,7 +50,6 @@ public class JavaUsers implements Users {
         Log.info("getUser : user = " + userId + "; pwd = " + password);
 
         User user = users.get(userId);
-
         // Check if user exists
         if( user == null ) {
             Log.info("User does not exist.");
@@ -57,11 +57,14 @@ public class JavaUsers implements Users {
             return Result.error(ErrorCode.NOT_FOUND);
         }
 
+        System.out.println("CHECKING PASSWORD");
         //Check if the password is correct
         if( !user.getPassword().equals( password)) {
             Log.info("Password is incorrect.");
+            System.out.println("There error is in getUser JavaUsers");
             return Result.error(ErrorCode.FORBIDDEN);
         }
+        System.out.println("PASSWORD CHECKED");
 
         return Result.ok(user);
     }

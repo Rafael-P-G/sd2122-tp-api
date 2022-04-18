@@ -10,6 +10,7 @@ import tp1.api.service.rest.RestUsers;
 import tp1.api.service.util.Result;
 import tp1.api.service.util.Users;
 import tp1.clients.RestClient;
+import util.ErrorManager;
 
 import java.net.URI;
 import java.util.List;
@@ -86,7 +87,8 @@ public class RestUsersClient  extends RestClient implements Users {
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(user, MediaType.APPLICATION_JSON));
 
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        //if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(String.class));
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -102,7 +104,8 @@ public class RestUsersClient  extends RestClient implements Users {
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
 
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        //if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(new GenericType<List<User>>() {}));
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -117,7 +120,9 @@ public class RestUsersClient  extends RestClient implements Users {
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
 
-        if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
+        System.out.println("Response: " + r);
+        //if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(User.class));
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -131,7 +136,8 @@ public class RestUsersClient  extends RestClient implements Users {
                 .accept(MediaType.APPLICATION_JSON)
                 .put(Entity.entity(user, MediaType.APPLICATION_JSON));
 
-        if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
+        //if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(User.class));
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -140,11 +146,13 @@ public class RestUsersClient  extends RestClient implements Users {
     }
 
     private Result<Void> clt_checkUsers(String userId) {
-        Response r = target
+        Response r = target.path(userId)
                 .request()
                 .get();
 
-        if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
+        System.out.println(r);
+        //if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode())
             return Result.ok();
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );

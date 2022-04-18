@@ -13,7 +13,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import tp1.api.User;
-import tp1.api.service.util.Result;
 
 @Path(RestUsers.PATH)
 public interface RestUsers {
@@ -108,6 +107,7 @@ public interface RestUsers {
 	 *         400 otherwise.
 	 */
 	@GET
+	@Path("/{userId}")
 	void checkUser(@PathParam("userId") String userId);
 
 

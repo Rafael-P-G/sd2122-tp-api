@@ -4,6 +4,7 @@ import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import tp1.api.service.rest.RestFiles;
+import tp1.api.service.util.Result;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,69 +31,41 @@ public class FilesResources implements RestFiles {
 
     @Override
     public void writeFile(String fileId, byte[] data, String token) {
-        Log.info("WriteFile : " + fileId);
+        Log.info("writeFile : " + fileId);
 
-        if(fileId == null || data == null){
-            Log.info("fileId or data is null.");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST );
-        }
-
-        try {
-            File file = new File(fileId);
-            file.createNewFile();
-
-            FileOutputStream outputStream = new FileOutputStream(fileId);
-            outputStream.write(data);
-            outputStream.close();
-
-            files.add(fileId);
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
+        var result = impl.writeFile(fileId, data, token);
+        if( !result.isOK() )
+            throw new WebApplicationException(translateError(result));
     }
 
     @Override
     public void deleteFile(String fileId, String token) {
         Log.info("deleteFile : file = " + fileId);
 
-        if(fileId == null){
-            Log.info("fileId or data is null.");
-            throw new WebApplicationException( Response.Status.NOT_FOUND);
-        }
-
-        File file = new File(fileId);
-
-        if(file.isFile()){
-            file.delete();
-            files.remove(fileId);
-        }else {
-            Log.info("Not a File");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST);
-        }
+        var result = impl.deleteFile(fileId, token);
+        if( !result.isOK() )
+            throw new WebApplicationException(translateError(result));
     }
 
     @Override
     public byte[] getFile(String fileId, String token) {
-        if(fileId == null){
-            Log.info("fileId or data is null.");
-            throw new WebApplicationException( Response.Status.NOT_FOUND);
+        Log.info("getFile : file = " + fileId);
+
+        var result = impl.getFile(fileId, token);
+        if( result.isOK() )
+            return result.value();
+        else
+            throw new WebApplicationException(translateError(result));
+    }
+
+    private Response.Status translateError(Result<?> result){
+        switch (result.error()){
+            case FORBIDDEN: return  Response.Status.FORBIDDEN;
+            case NOT_FOUND: return Response.Status.NOT_FOUND;
+            case CONFLICT: return Response.Status.CONFLICT;
+            case BAD_REQUEST: return Response.Status.BAD_REQUEST;
+            default: return Response.Status.INTERNAL_SERVER_ERROR;
         }
-
-        try {
-            File file = new File(fileId);
-            byte[] buffer = Files.readAllBytes(file.toPath());
-
-            return  buffer;
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Log.info("Unknown File Related Error");
-        throw new WebApplicationException( Response.Status.BAD_REQUEST);
     }
 }
 
