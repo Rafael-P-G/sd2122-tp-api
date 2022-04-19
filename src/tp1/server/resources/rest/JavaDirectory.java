@@ -5,6 +5,9 @@ import jakarta.ws.rs.core.Response;
 import tp1.api.FileInfo;
 import tp1.api.service.util.Directory;
 import tp1.api.service.util.Result;
+import tp1.clients.files.RestFilesClient;
+import tp1.server.RESTDirServer;
+import tp1.server.RESTFilesServer;
 
 import java.io.File;
 import java.net.URI;
@@ -26,28 +29,62 @@ public class JavaDirectory implements Directory {
         }
 
         //TODO how to get file URL
-        FileInfo file = new FileInfo(userId,
-                filename,
-                "http://172.18.0.4:8080/rest/files/"+ userId + "_" + filename,
-                new HashSet<>());
-
+        FileInfo file;
         String fileURL;
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null){
             files = new HashMap<>();
             usersFiles.put(userId, files);
+
+            file = createNewFile(filename, userId);
         }
         else {
             file = files.get(filename);
             if(file == null){
+                file = createNewFile(filename, userId);
+            }
+            else {
 
+                file.setFilename(filename);
+                file.setOwner(userId);
+                file.setSharedWith(file.getSharedWith());
+                file.setFileURL(file.getFileURL());
+            }
+        }
+        files.put(filename, file);
+
+        /*
+        if(files == null){
+            files = new HashMap<>();
+            usersFiles.put(userId, files);
+            fileURL = RESTDirServer.discovery.getEmptiestFileURI();
+        }
+        else {
+            file = files.get(filename);
+            if(file == null){
+                fileURL = RESTDirServer.discovery.getEmptiestFileURI();
             }
             else {
                 fileURL = file.getFileURL();
             }
         }
+        file = new FileInfo(userId,
+                filename,
+                fileURL + "/" + RESTFilesServer.SERVICE + "/" + filename+"_"+userId,
+                new HashSet<>());
         files.put(filename, file);
+        */
+
         return Result.ok(file);
+    }
+
+    private FileInfo createNewFile(String filename, String userId) {
+        String fileURL = RESTDirServer.discovery.getEmptiestFileURI();;
+        FileInfo file = new FileInfo(userId,
+                filename,
+                fileURL + "/" + RESTFilesServer.SERVICE + "/" + filename + "_" + userId,
+                new HashSet<>());
+        return file;
     }
 
     @Override

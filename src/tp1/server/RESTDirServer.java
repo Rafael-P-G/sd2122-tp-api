@@ -23,8 +23,8 @@ public class RESTDirServer {
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
 
     public static Discovery discovery;
-    public static UsersClientFactory usersFactory;// = new UsersClientFactory();
-    public static FilesClientFactory filesFactory;// = new FilesClientFactory();
+    public static UsersClientFactory usersFactory;
+    public static FilesClientFactory filesFactory;
 
 
     public static void main(String[] args) {

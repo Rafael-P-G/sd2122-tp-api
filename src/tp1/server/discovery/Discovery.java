@@ -46,6 +46,7 @@ public class Discovery {
 	private String serviceURI;
 
 	private Map<String, Map<String, LocalTime>> receivedAnnouncements;
+	private Map<String, Boolean> fileURIs;
 
 	/**
 	 * @param  serviceName the name of the service to announce
@@ -57,6 +58,9 @@ public class Discovery {
 		this.serviceURI  = serviceURI;
 
 		receivedAnnouncements = new HashMap<String, Map<String, LocalTime>>();
+
+		if(serviceName == RESTDirServer.SERVICE)
+			fileURIs = new HashMap<>();
 	}
 	
 	/**
@@ -120,6 +124,9 @@ public class Discovery {
 							serviceInfo.put(tokens[1], LocalTime.now());
 							receivedAnnouncements.put(tokens[0], serviceInfo);
 
+							if(fileURIs != null){
+								fileURIs.put(tokens[1], false);
+							}
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -176,7 +183,29 @@ public class Discovery {
 
 		return bestURIWrapper.bestURI;
 	}
-	
+
+	public String getEmptiestFileURI(){
+		if(fileURIs == null) return null;
+
+		int dirtyUris = 0;
+		String uri = null;
+		Set<Map.Entry<String, Boolean>> uris = fileURIs.entrySet();
+		for (Map.Entry<String, Boolean> set : uris){
+			if(!set.getValue()) {
+				uri = set.getKey();
+				break;
+			}
+			else
+				dirtyUris++;
+		}
+
+		if(dirtyUris == uris.size()){
+			fileURIs.replaceAll((k,v) -> v = false);
+		}
+
+		return uri;
+	}
+
 	private void joinGroupInAllInterfaces(MulticastSocket ms) throws SocketException {
 		Enumeration<NetworkInterface> ifs = NetworkInterface.getNetworkInterfaces();
 		while (ifs.hasMoreElements()) {
