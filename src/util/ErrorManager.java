@@ -25,17 +25,14 @@ public class ErrorManager {
         return statusCode;
     }
 
-    /*
+
     public static Result.ErrorCode responseErrorToResult(Response r){
-        switch (r.getStatus()){
-            case Status.OK.getStatusCode(): return Result.ErrorCode.OK;
-            case Status.FORBIDDEN.getStatusCode(): return  Result.ErrorCode.FORBIDDEN;
-            case Status.NOT_FOUND.getStatusCode(): return Result.ErrorCode.NOT_FOUND;
-            case Status.CONFLICT.getStatusCode(): return Result.ErrorCode.CONFLICT;
-            case Status.BAD_REQUEST.getStatusCode(): return Result.ErrorCode.BAD_REQUEST;
+        switch (r.getStatusInfo().toEnum()){
+            case FORBIDDEN: return  Result.ErrorCode.FORBIDDEN;
+            case NOT_FOUND: return Result.ErrorCode.NOT_FOUND;
+            case CONFLICT: return Result.ErrorCode.CONFLICT;
+            case BAD_REQUEST: return Result.ErrorCode.BAD_REQUEST;
             default: return Result.ErrorCode.INTERNAL_ERROR;
         }
     }
-
-     */
 }

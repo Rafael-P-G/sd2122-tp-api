@@ -15,10 +15,8 @@ public class JavaFiles implements Files {
 
     private static Logger Log = Logger.getLogger(FilesResources.class.getName());
 
-    private List<String> files;
-
     public JavaFiles(){
-        files = new ArrayList<>();
+
     }
 
     @Override
@@ -39,8 +37,6 @@ public class JavaFiles implements Files {
             FileOutputStream outputStream = new FileOutputStream(fileId);
             outputStream.write(data);
             outputStream.close();
-
-            files.add(fileId);
         }
         catch (IOException e){
             e.printStackTrace();
@@ -57,6 +53,7 @@ public class JavaFiles implements Files {
 
         if(fileId == null){
             Log.info("fileId or data is null.");
+            System.out.println("This is JavaFiles: fileId is null");
             return Result.error( Result.ErrorCode.NOT_FOUND );
         }
 
@@ -64,9 +61,9 @@ public class JavaFiles implements Files {
 
         if(file.isFile()){
             file.delete();
-            files.remove(fileId);
         }else {
             Log.info("Not a File");
+            System.out.println("This is JavaFiles: is not a file");
             return Result.error( Result.ErrorCode.BAD_REQUEST );
         }
 
@@ -78,6 +75,7 @@ public class JavaFiles implements Files {
 
         if(fileId == null){
             Log.info("fileId or data is null.");
+            System.out.println("JavaFiles: fileId is null");
             return Result.error( Result.ErrorCode.NOT_FOUND );
         }
 

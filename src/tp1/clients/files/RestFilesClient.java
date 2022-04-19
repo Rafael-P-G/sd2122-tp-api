@@ -48,15 +48,8 @@ public class RestFilesClient extends RestClient implements Files {
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
-        /*
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
-            return Result.ok();
-        else
-            System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-         */
-
-         if( r.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+         if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode()) {
             return Result.ok();
         }else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -71,7 +64,7 @@ public class RestFilesClient extends RestClient implements Files {
                 .request()
                 .delete();
 
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode())
             return Result.ok();
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -80,12 +73,14 @@ public class RestFilesClient extends RestClient implements Files {
     }
 
     private Result<byte[]> clt_getFile(String fileId, String token) {
+        System.out.println("Getting File: " + fileId);
         Response r = target.path( fileId)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
 
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        System.out.println("Response: " + r);
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok();
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );

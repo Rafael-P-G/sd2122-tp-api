@@ -1,6 +1,5 @@
 package tp1.server.resources.rest;
 
-import jdk.swing.interop.SwingInterOpUtils;
 import tp1.api.User;
 import tp1.api.service.util.Result;
 import tp1.api.service.util.Result.ErrorCode;
@@ -13,7 +12,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class JavaUsers implements Users {
-    private static Logger Log = Logger.getLogger(UsersResource.class.getName());
+    private static Logger Log = Logger.getLogger(UsersResources.class.getName());
 
     /*
     esta classe vai ser equivalente ao UsersResources -> vai conter a logica do programa
@@ -153,8 +152,9 @@ public class JavaUsers implements Users {
 
     @Override
     public Result<Void> checkUser(String userId) {
-        if(!users.containsKey(userId))
+        if(!users.containsKey(userId)) {
             return Result.error(ErrorCode.NOT_FOUND);
+        }
 
         return Result.ok();
     }

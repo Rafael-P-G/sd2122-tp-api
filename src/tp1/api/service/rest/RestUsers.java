@@ -20,6 +20,7 @@ public interface RestUsers {
 	static final String PATH="/users";
 	public static final String QUERY = "query";
 	public static final String USER_ID = "userId";
+	public static final String ACCUSER_ID = "accUserId";
 	public static final String PASSWORD = "password";
 
 	/**

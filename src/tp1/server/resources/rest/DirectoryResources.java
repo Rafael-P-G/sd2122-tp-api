@@ -35,50 +35,40 @@ public class DirectoryResources implements RestDirectory {
     public FileInfo writeFile(String filename, byte[] data, String userId, String password){
         var usersClient = usersFactory.getClient();
         var checkUserResult = usersClient.getUser(userId, password);
-        /*
         if( !checkUserResult.isOK() )
-            throw new WebApplicationException(translateError(checkUserResult));
-
-         */
+            throw new WebApplicationException(ErrorManager.translateResultError(checkUserResult));
 
         String fileId = filename + "_" + userId;
         var filesClient = filesFactory.getClient();
         var writeFileResult = filesClient.writeFile(fileId, data, "");
-        /*
         if( !writeFileResult.isOK() )
-            throw new WebApplicationException(translateError(writeFileResult));
-
-         */
+            throw new WebApplicationException(ErrorManager.translateResultError(writeFileResult));
 
         var result = impl.writeFile(filename, data, userId, password);
         if( result.isOK() )
             return result.value();
         else
-            throw new WebApplicationException(translateError(result));
+            throw new WebApplicationException(ErrorManager.translateResultError(result));
 
     }
 
     @Override
     public void deleteFile(String filename, String userId, String password) {
         var usersClient = usersFactory.getClient();
-        var checkUserResult = usersClient.getUser(userId, password);
-        /*
-        if( !checkUserResult.isOK() )
-            throw new WebApplicationException(translateError(checkUserResult));
 
-         */
+        var checkUserResult = usersClient.getUser(userId, password);
+        if( !checkUserResult.isOK() )
+            throw new WebApplicationException(ErrorManager.translateResultError(checkUserResult));
 
         String fileId = filename + "_" + userId;
         var filesClient = filesFactory.getClient();
         var writeFileResult = filesClient.deleteFile(fileId, "");
-        /*
         if( !writeFileResult.isOK() )
-            throw new WebApplicationException(translateError(writeFileResult));
-         */
+            throw new WebApplicationException(ErrorManager.translateResultError(writeFileResult));
 
         var result = impl.deleteFile(filename, userId, password);
         if( !result.isOK() )
-            throw new WebApplicationException(translateError(result));
+            throw new WebApplicationException(ErrorManager.translateResultError(result));
 
     }
 
@@ -86,72 +76,52 @@ public class DirectoryResources implements RestDirectory {
     public void shareFile(String filename, String userId, String userIdShare, String password) {
         var usersClient = usersFactory.getClient();
         var checkUserResult = usersClient.getUser(userId, password);
-        /*
         if( !checkUserResult.isOK() )
-            throw new WebApplicationException(translateError(checkUserResult));
-
-         */
+            throw new WebApplicationException(ErrorManager.translateResultError(checkUserResult));
 
         var checkUserShareResult = usersClient.checkUser(userIdShare);
-        /*
-        if( !checkUserShareResult.isOK() )
-            throw new WebApplicationException(translateError(checkUserResult));
-
-         */
+        if( !checkUserShareResult.isOK() ) {
+            System.out.println("LA-LI-LU-LE-LO");
+            throw new WebApplicationException(ErrorManager.translateResultError(checkUserShareResult));
+        }
 
         var result = impl.shareFile(filename, userId, userIdShare, password);
         if( !result.isOK() )
-            throw new WebApplicationException(translateError(result));
+            throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
 
     @Override
     public void unshareFile(String filename, String userId, String userIdShare, String password) {
         var usersClient = usersFactory.getClient();
         var checkUserResult = usersClient.getUser(userId, password);
-        /*
         if( !checkUserResult.isOK() )
-            throw new WebApplicationException(translateError(checkUserResult));
-         */
+            throw new WebApplicationException(ErrorManager.translateResultError(checkUserResult));
 
         var checkUserShareResult = usersClient.checkUser(userIdShare);
-        /*
         if( !checkUserShareResult.isOK() )
-            throw new WebApplicationException(translateError(checkUserResult));
-         */
+            throw new WebApplicationException(ErrorManager.translateResultError(checkUserResult));
 
         var result = impl.unshareFile(filename, userId, userIdShare, password);
         if( !result.isOK() )
-            throw new WebApplicationException(translateError(result));
+            throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
 
     @Override
     public byte[] getFile(String filename, String userId, String accUserId, String password) {
-        System.out.println("*******************************GETTING FILE*******************************");
         var usersClient = usersFactory.getClient();
-
-        System.out.println("Checking userId");
         var checkUserResult = usersClient.checkUser(userId);
-        /*
         if( !checkUserResult.isOK() )
-            throw new WebApplicationException(translateError(checkUserResult));
-         */
-        System.out.println("UserId checked");
+            throw new WebApplicationException(ErrorManager.translateResultError(checkUserResult));
 
-        System.out.println("Checking account User");
         var checkUserShareResult = usersClient.getUser(accUserId, password);
-        /*
         if( !checkUserShareResult.isOK() )
-            throw new WebApplicationException(translateError(checkUserResult));
-         */
-        System.out.println("Account User checked");
+            throw new WebApplicationException(ErrorManager.translateResultError(checkUserShareResult));
 
-        System.out.println("Sending file");
         var result = impl.getFile(filename, userId, accUserId, password);
         if( result.isOK() ) {
-            System.out.println("File sent");
             return result.value();
         }else
-            throw new WebApplicationException(translateError(result));
+            throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
 
 
@@ -159,19 +129,18 @@ public class DirectoryResources implements RestDirectory {
     public List<FileInfo> lsFile(String userId, String password) {
         var usersClient = usersFactory.getClient();
         var checkUserResult = usersClient.getUser(userId, password);
-        /*
-        if( !checkUserResult.isOK() )
-            throw new WebApplicationException(translateError(checkUserResult));
 
-         */
+        if( !checkUserResult.isOK() )
+            throw new WebApplicationException(ErrorManager.translateResultError(checkUserResult));
 
         var result = impl.lsFile(userId, password);
         if(result.isOK())
             return result.value();
         else
-            throw new WebApplicationException(translateError(result));
+            throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
 
+    /*
     private Response.Status translateError(Result<?> result){
         System.out.println("translating: " + result.error());
         switch (result.error()){
@@ -183,6 +152,8 @@ public class DirectoryResources implements RestDirectory {
             default: return Response.Status.INTERNAL_SERVER_ERROR;
         }
     }
+
+     */
 }
 
 

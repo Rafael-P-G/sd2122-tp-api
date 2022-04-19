@@ -64,7 +64,9 @@ public class RestDirectoryClient extends RestClient implements Directory {
 
     @Override
     public Result<List<FileInfo>> lsFile(String userId, String password) {
-        return null;
+        return super.reTry( () -> {
+            return clt_lsFile(userId, password);
+        });
     }
 
     private Result<FileInfo> clt_writeFile(String filename, byte[] data, String userId, String password) {
@@ -75,8 +77,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
 
-        System.out.println(r.toString()); //TODO delete this line 57956
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(FileInfo.class));
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -90,7 +91,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
                 .request()
                 .delete();
 
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode())
             return Result.ok();
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -104,7 +105,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
                 .request()
                 .post(Entity.json(null));
 
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode())
             return Result.ok();
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -118,7 +119,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
                 .request()
                 .delete();
 
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() )
             return Result.ok();
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
@@ -129,16 +130,20 @@ public class RestDirectoryClient extends RestClient implements Directory {
     private Result<byte[]> clt_getFile(String filename, String userId, String accUserId, String password) {
         Response r = target.path(userId).path(filename)
                 .queryParam(RestUsers.PASSWORD, password)
-                .queryParam(RestUsers.QUERY, accUserId) //TODO ask if is QUERY or USERID
+                .queryParam(RestUsers.ACCUSER_ID, accUserId) //TODO ask if is QUERY or USERID
                 .request()
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .get();
 
-        if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(new GenericType<byte[]>() {}));
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
+        return null;
+    }
+
+    private Result<List<FileInfo>> clt_lsFile(String userId, String password) {
         return null;
     }
 }

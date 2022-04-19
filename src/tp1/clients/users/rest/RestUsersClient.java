@@ -87,7 +87,6 @@ public class RestUsersClient  extends RestClient implements Users {
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(user, MediaType.APPLICATION_JSON));
 
-        //if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
         if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(String.class));
         else
@@ -104,7 +103,6 @@ public class RestUsersClient  extends RestClient implements Users {
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
 
-        //if( r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity() )
         if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(new GenericType<List<User>>() {}));
         else
@@ -120,14 +118,12 @@ public class RestUsersClient  extends RestClient implements Users {
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
 
-        System.out.println("Response: " + r);
-        //if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
         if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(User.class));
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<User> clt_updateUser(String userId, String password, User user){
@@ -136,7 +132,6 @@ public class RestUsersClient  extends RestClient implements Users {
                 .accept(MediaType.APPLICATION_JSON)
                 .put(Entity.entity(user, MediaType.APPLICATION_JSON));
 
-        //if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
         if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(User.class));
         else
@@ -150,8 +145,6 @@ public class RestUsersClient  extends RestClient implements Users {
                 .request()
                 .get();
 
-        System.out.println(r);
-        //if(r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
         if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode())
             return Result.ok();
         else

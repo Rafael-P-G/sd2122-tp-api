@@ -3,7 +3,7 @@ package tp1.server;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import tp1.server.discovery.Discovery;
-import tp1.server.resources.rest.UsersResource;
+import tp1.server.resources.rest.UsersResources;
 import tp1.server.util.GenericExceptionMapper;
 
 import java.net.InetAddress;
@@ -28,7 +28,7 @@ public class RESTUsersServer {
         try {
             //Debug.setLogLevel( Level.INFO, Debug.SD2122 );
             ResourceConfig config = new ResourceConfig();
-            config.register(UsersResource.class);
+            config.register(UsersResources.class);
             //config.register(CustomLoggingFilter.class);
             config.register(GenericExceptionMapper.class);
 

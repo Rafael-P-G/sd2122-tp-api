@@ -32,10 +32,8 @@ public class FilesClientFactory {
     }
 
     public static Files getClient() {
-        System.out.println("GETCLIENT URIS" + discovery.knownUrisOf(SERVICE_TO_RETURN));
         var serverURI = discovery.getOptimalURI(SERVICE_TO_RETURN); // use discovery to find a uri of the Users service;
         if( serverURI.endsWith("rest")){
-            System.out.println("ENDED WITH REST");
             return new RestFilesClient(URI.create(serverURI) );
         }
         else

@@ -3,11 +3,8 @@ package tp1.server.resources.rest;
 
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response.Status;
-import jdk.swing.interop.SwingInterOpUtils;
 import tp1.api.User;
 import tp1.api.service.rest.RestUsers;
-import tp1.api.service.util.Result;
 import tp1.api.service.util.Users;
 import util.ErrorManager;
 
@@ -17,15 +14,15 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 @Singleton
-public class UsersResource implements RestUsers {
+public class UsersResources implements RestUsers {
 
     private final Map<String,User> users = new HashMap<>();
 
-    private static Logger Log = Logger.getLogger(UsersResource.class.getName());
+    private static Logger Log = Logger.getLogger(UsersResources.class.getName());
 
     final Users impl = new JavaUsers();
 
-    public UsersResource() {
+    public UsersResources() {
 
     }
 
@@ -38,26 +35,17 @@ public class UsersResource implements RestUsers {
             return result.value();
         else
             throw new WebApplicationException(ErrorManager.translateResultError(result));
-            //throw new WebApplicationException(translateError(result));
     }
 
 
     @Override
     public User getUser(String userId, String password) {
         Log.info("getUser : user = " + userId + "; pwd = " + password);
-
-        System.out.println("UsersResource: getting file");
         var result = impl.getUser(userId, password);
-        System.out.println("some jiberish");
-        System.out.println("Is result OK: " + result.isOK());
         if( result.isOK() )
             return result.value();
-        else {
-            System.out.println("Ha Ha!!! I'll throw an exception now >:(");
-            System.out.println("Your error is: " + ErrorManager.translateResultError(result));
+        else
             throw new WebApplicationException(ErrorManager.translateResultError(result));
-        }
-            //throw new WebApplicationException(translateError(result));
     }
 
 
@@ -69,7 +57,6 @@ public class UsersResource implements RestUsers {
             return result.value();
         else
             throw new WebApplicationException(ErrorManager.translateResultError(result));
-            //throw new WebApplicationException(translateError(result));
     }
 
 
@@ -82,7 +69,6 @@ public class UsersResource implements RestUsers {
             return result.value();
         else
             throw new WebApplicationException(ErrorManager.translateResultError(result));
-            //throw new WebApplicationException(translateError(result));
     }
 
 
@@ -95,7 +81,6 @@ public class UsersResource implements RestUsers {
             return result.value();
         else
             throw new WebApplicationException(ErrorManager.translateResultError(result));
-            //throw new WebApplicationException(translateError(result));
     }
 
     @Override
@@ -105,7 +90,6 @@ public class UsersResource implements RestUsers {
         var result = impl.checkUser(userId);
         if( !result.isOK() )
             throw new WebApplicationException(ErrorManager.translateResultError(result));
-            //throw new WebApplicationException(translateError(result));
     }
 
     /*

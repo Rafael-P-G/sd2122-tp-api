@@ -5,6 +5,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import tp1.api.service.rest.RestFiles;
 import tp1.api.service.util.Result;
+import util.ErrorManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,7 +36,7 @@ public class FilesResources implements RestFiles {
 
         var result = impl.writeFile(fileId, data, token);
         if( !result.isOK() )
-            throw new WebApplicationException(translateError(result));
+            throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
 
     @Override
@@ -44,7 +45,7 @@ public class FilesResources implements RestFiles {
 
         var result = impl.deleteFile(fileId, token);
         if( !result.isOK() )
-            throw new WebApplicationException(translateError(result));
+            throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
 
     @Override
@@ -55,9 +56,10 @@ public class FilesResources implements RestFiles {
         if( result.isOK() )
             return result.value();
         else
-            throw new WebApplicationException(translateError(result));
+            throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
 
+    /*
     private Response.Status translateError(Result<?> result){
         switch (result.error()){
             case FORBIDDEN: return  Response.Status.FORBIDDEN;
@@ -67,5 +69,7 @@ public class FilesResources implements RestFiles {
             default: return Response.Status.INTERNAL_SERVER_ERROR;
         }
     }
+
+     */
 }
 
