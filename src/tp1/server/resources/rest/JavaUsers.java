@@ -56,14 +56,13 @@ public class JavaUsers implements Users {
             return Result.error(ErrorCode.NOT_FOUND);
         }
 
-        System.out.println("CHECKING PASSWORD");
         //Check if the password is correct
         if( !user.getPassword().equals( password)) {
             Log.info("Password is incorrect.");
             System.out.println("There error is in getUser JavaUsers");
             return Result.error(ErrorCode.FORBIDDEN);
         }
-        System.out.println("PASSWORD CHECKED");
+
 
         return Result.ok(user);
     }

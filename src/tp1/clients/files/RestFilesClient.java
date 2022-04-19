@@ -9,6 +9,7 @@ import tp1.api.service.rest.RestUsers;
 import tp1.api.service.util.Files;
 import tp1.api.service.util.Result;
 import tp1.clients.RestClient;
+import util.ErrorManager;
 
 import java.net.URI;
 
@@ -55,7 +56,7 @@ public class RestFilesClient extends RestClient implements Files {
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<Void> clt_deleteFile(String fileId, String token) {
@@ -69,7 +70,7 @@ public class RestFilesClient extends RestClient implements Files {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+         return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<byte[]> clt_getFile(String fileId, String token) {
@@ -85,6 +86,6 @@ public class RestFilesClient extends RestClient implements Files {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 }

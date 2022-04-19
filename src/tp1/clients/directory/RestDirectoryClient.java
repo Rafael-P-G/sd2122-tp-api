@@ -12,6 +12,7 @@ import tp1.api.service.rest.RestUsers;
 import tp1.api.service.util.Directory;
 import tp1.api.service.util.Result;
 import tp1.clients.RestClient;
+import util.ErrorManager;
 
 import java.net.URI;
 import java.util.List;
@@ -82,7 +83,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<Void> clt_deleteFile(String filename, String userId, String password) {
@@ -96,7 +97,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+         return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<Void> clt_shareFile(String filename, String userId, String userIdShare, String password) {
@@ -110,7 +111,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<Void> clt_unshareFile(String filename, String userId, String userIdShare, String password) {
@@ -124,7 +125,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<byte[]> clt_getFile(String filename, String userId, String accUserId, String password) {
@@ -140,7 +141,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<List<FileInfo>> clt_lsFile(String userId, String password) {

@@ -77,7 +77,7 @@ public class RestUsersClient  extends RestClient implements Users {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
 
@@ -92,7 +92,7 @@ public class RestUsersClient  extends RestClient implements Users {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<List<User>> clt_searchUsers(String pattern) {
@@ -108,7 +108,7 @@ public class RestUsersClient  extends RestClient implements Users {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<User> clt_getUser(String userId, String password){
@@ -137,7 +137,7 @@ public class RestUsersClient  extends RestClient implements Users {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 
     private Result<Void> clt_checkUsers(String userId) {
@@ -150,6 +150,6 @@ public class RestUsersClient  extends RestClient implements Users {
         else
             System.out.println("Error, HTTP error status: " + r.getStatus() );
 
-        return null;
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 }
