@@ -145,7 +145,18 @@ public class RestDirectoryClient extends RestClient implements Directory {
     }
 
     private Result<List<FileInfo>> clt_lsFile(String userId, String password) {
-        return null;
+        Response r = target.path(userId)
+                .queryParam(RestUsers.PASSWORD, password)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get();
+
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
+            return Result.ok(r.readEntity(new GenericType<List<FileInfo>>() {}));
+        else
+            System.out.println("Error, HTTP error status: " + r.getStatus() );
+
+        return Result.error(ErrorManager.responseErrorToResult(r));
     }
 }
 

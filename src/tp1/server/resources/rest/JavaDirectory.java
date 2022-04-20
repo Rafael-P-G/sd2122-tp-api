@@ -28,9 +28,7 @@ public class JavaDirectory implements Directory {
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
 
-        //TODO how to get file URL
         FileInfo file;
-        String fileURL;
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null){
             files = new HashMap<>();
@@ -53,38 +51,15 @@ public class JavaDirectory implements Directory {
         }
         files.put(filename, file);
 
-        /*
-        if(files == null){
-            files = new HashMap<>();
-            usersFiles.put(userId, files);
-            fileURL = RESTDirServer.discovery.getEmptiestFileURI();
-        }
-        else {
-            file = files.get(filename);
-            if(file == null){
-                fileURL = RESTDirServer.discovery.getEmptiestFileURI();
-            }
-            else {
-                fileURL = file.getFileURL();
-            }
-        }
-        file = new FileInfo(userId,
-                filename,
-                fileURL + "/" + RESTFilesServer.SERVICE + "/" + filename+"_"+userId,
-                new HashSet<>());
-        files.put(filename, file);
-        */
-
         return Result.ok(file);
     }
 
     private FileInfo createNewFile(String filename, String userId) {
-        String fileURL = RESTDirServer.discovery.getEmptiestFileURI();;
-        FileInfo file = new FileInfo(userId,
+        String fileURL = RESTDirServer.discovery.getEmptiestFileURI();
+        return new FileInfo(userId,
                 filename,
                 fileURL + "/" + RESTFilesServer.SERVICE + "/" + filename + "_" + userId,
                 new HashSet<>());
-        return file;
     }
 
     @Override
@@ -101,15 +76,27 @@ public class JavaDirectory implements Directory {
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
-         if(files.remove(filename) == null){
-             return Result.error(Result.ErrorCode.BAD_REQUEST);
-         }
+        FileInfo fileToRemove = files.remove(filename);
+        if(fileToRemove == null){
+            System.out.println("The problem is in JavaDirectory, files.remove(filename) returned: null");
+            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
+
+        removeFileFromSharedLists(fileToRemove);
         return Result.ok();
+    }
+
+    private void removeFileFromSharedLists(FileInfo fileToRemove) {
+
+        System.out.println(fileToRemove.getSharedWith());
+        fileToRemove.getSharedWith().forEach(user ->{
+            boolean removed = filesUserAccess.get(user).remove(fileToRemove);
+            System.out.println("File " + fileToRemove.getFilename() + " was removed from " + user + "? " + removed);
+        });
     }
 
     @Override
     public Result<Void> shareFile(String filename, String userId, String userIdShare, String password) {
-
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null)
             return Result.error(Result.ErrorCode.BAD_REQUEST);
@@ -126,8 +113,10 @@ public class JavaDirectory implements Directory {
             filesSharedWithUser = new ArrayList<>();
             filesUserAccess.put(userIdShare, filesSharedWithUser);
         }
-        filesSharedWithUser.add(file);
 
+        if(filesSharedWithUser.indexOf(file) < 0){
+            filesSharedWithUser.add(file);
+        }
         return Result.ok();
     }
 
@@ -161,7 +150,6 @@ public class JavaDirectory implements Directory {
 
     @Override
     public Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
-        System.out.println("JavaDir -> Entered getFile");
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null) {
             System.out.println("This is JavaDir: fileS is null");
@@ -174,12 +162,11 @@ public class JavaDirectory implements Directory {
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
-        if( accUserId != userId && !file.getSharedWith().contains(accUserId)) {
+        if( !accUserId.equals(userId) && !file.getSharedWith().contains(accUserId)) {
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
 
-        System.out.println("JavaDir -> redirecting getFile");
-        //Redirect TODO check if is right
+        //Redirect
         throw new WebApplicationException(
                 Response.temporaryRedirect(
                         URI.create(file.getFileURL())).build());
@@ -187,16 +174,24 @@ public class JavaDirectory implements Directory {
 
     @Override
     public Result<List<FileInfo>> lsFile(String userId, String password) {
-        Map<String, FileInfo> userFiles = usersFiles.get(userId);
-        if(userFiles == null)
-            return Result.error(Result.ErrorCode.BAD_REQUEST);
-
-        return Result.ok(hasAccessTo(userId, userFiles));
+        return Result.ok(hasAccessTo(userId));
     }
 
-    private List<FileInfo> hasAccessTo(String userId, Map<String, FileInfo> userFiles){
-        List<FileInfo> accesses = new ArrayList<>(userFiles.values());
-        accesses.addAll(filesUserAccess.get(userId));
-        return accesses;
+    private List<FileInfo> hasAccessTo(String userId){
+        List<FileInfo> result = new ArrayList<>();
+        Map<String, FileInfo> uf = usersFiles.get(userId);
+
+        if(uf != null){
+            List<FileInfo> files = new ArrayList<>(uf.values());
+            if(files != null){
+                result.addAll(files);
+            }
+        }
+        List<FileInfo> accesses = filesUserAccess.get(userId);
+        System.out.println("User " + userId + " has accesses to: " + accesses);
+        if(accesses != null){
+            result.addAll(filesUserAccess.get(userId));
+        }
+        return result;
     }
 }

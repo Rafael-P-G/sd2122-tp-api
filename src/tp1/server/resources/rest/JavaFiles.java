@@ -59,6 +59,8 @@ public class JavaFiles implements Files {
 
         File file = new File(fileId);
 
+        file.delete();
+        /*
         if(file.isFile()){
             file.delete();
         }else {
@@ -66,6 +68,8 @@ public class JavaFiles implements Files {
             System.out.println("This is JavaFiles: is not a file");
             return Result.error( Result.ErrorCode.BAD_REQUEST );
         }
+
+         */
 
         return Result.ok();
     }

@@ -1,6 +1,7 @@
 package tp1.server.discovery;
 
 import tp1.server.RESTDirServer;
+import tp1.server.RESTFilesServer;
 import tp1.server.RESTUsersServer;
 
 import java.io.IOException;
@@ -124,7 +125,7 @@ public class Discovery {
 							serviceInfo.put(tokens[1], LocalTime.now());
 							receivedAnnouncements.put(tokens[0], serviceInfo);
 
-							if(fileURIs != null){
+							if(fileURIs != null && tokens[0].equals(RESTFilesServer.SERVICE)){
 								fileURIs.put(tokens[1], false);
 							}
 						}

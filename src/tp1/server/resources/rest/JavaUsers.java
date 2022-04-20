@@ -52,7 +52,7 @@ public class JavaUsers implements Users {
         // Check if user exists
         if( user == null ) {
             Log.info("User does not exist.");
-            System.out.println("User non existant");
+            System.out.println("User non existent");
             return Result.error(ErrorCode.NOT_FOUND);
         }
 
