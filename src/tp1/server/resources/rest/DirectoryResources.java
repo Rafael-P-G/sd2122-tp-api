@@ -140,20 +140,6 @@ public class DirectoryResources implements RestDirectory {
             throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
 
-    /*
-    private Response.Status translateError(Result<?> result){
-        System.out.println("translating: " + result.error());
-        switch (result.error()){
-            case OK: return Response.Status.OK;
-            case FORBIDDEN: return  Response.Status.FORBIDDEN;
-            case NOT_FOUND: return Response.Status.NOT_FOUND;
-            case CONFLICT: return Response.Status.CONFLICT;
-            case BAD_REQUEST: return Response.Status.BAD_REQUEST;
-            default: return Response.Status.INTERNAL_SERVER_ERROR;
-        }
-    }
-
-     */
 }
 
 
