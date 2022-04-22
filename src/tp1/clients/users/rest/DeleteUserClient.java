@@ -2,8 +2,15 @@ package tp1.clients.users.rest;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.logging.Logger;
 
 public class DeleteUserClient {
+
+    private static Logger Log = Logger.getLogger(DeleteUserClient.class.getName());
+
+    static {
+        System.setProperty("java.net.preferIPv4Stack", "true");
+    }
 
     public static void main(String[] args) throws IOException {
 

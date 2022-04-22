@@ -113,7 +113,9 @@ public interface Directory {
 
 	/**
 	 * Delete all existing files of user ("userId").
-	 * Only the owner (userId) can delete the files.
+	 * It is implied that this operation can only be performed by the owner of the files,
+	 * as it is only performed when a User is deleted,
+	 * however, at the time this is not guaranteed by the operation itself.
 	 *
 	 * @param userId - id of the user.
 	 *

@@ -4,8 +4,15 @@ import tp1.api.User;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.logging.Logger;
 
 public class UpdateUserClient {
+
+    private static Logger Log = Logger.getLogger(UpdateUserClient.class.getName());
+
+    static {
+        System.setProperty("java.net.preferIPv4Stack", "true");
+    }
 
 
     public static void main(String[] args) throws IOException {

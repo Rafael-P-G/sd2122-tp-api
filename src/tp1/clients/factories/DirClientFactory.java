@@ -30,10 +30,10 @@ public class DirClientFactory {
     }
 
     public static Directory getClient() {
-        var serverURI = discovery.getOptimalURI(SERVICE); // use discovery to find a uri of the Users service;
+        var serverURI = discovery.getOptimalURI(SERVICE);
         if( serverURI.endsWith("rest"))
             return new RestDirectoryClient(URI.create(serverURI) );
         else
-            return null; //new SoapUsersClient( serverURI );
+            return null;
     }
 }

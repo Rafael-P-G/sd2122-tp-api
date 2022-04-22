@@ -99,7 +99,7 @@ public interface RestUsers {
 	List<User> searchUsers(@QueryParam("query") String pattern);
 
 	/**
-	 * Check if user exists.
+	 * Checks if user exists in the system.
 	 *
 	 * @param userId the userId of the user
 	 * @return 200 the user object, if the userId exists and password matches the existing

@@ -29,11 +29,11 @@ public class UsersClientFactory {
     }
 
     public static Users getClient() {
-        var serverURI = discovery.getOptimalURI(SERVICE_TO_RETURN); // use discovery to find a uri of the Users service;
+        var serverURI = discovery.getOptimalURI(SERVICE_TO_RETURN);
         if( serverURI.endsWith("rest"))
             return new RestUsersClient(URI.create(serverURI) );
        else
-        return null; //new SoapUsersClient( serverURI );
+        return null;
     }
 
 }

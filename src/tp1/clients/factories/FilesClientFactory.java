@@ -32,12 +32,12 @@ public class FilesClientFactory {
     }
 
     public static Files getClient() {
-        var serverURI = discovery.getOptimalURI(SERVICE_TO_RETURN); // use discovery to find a uri of the Users service;
+        var serverURI = discovery.getOptimalURI(SERVICE_TO_RETURN);
         if( serverURI.endsWith("rest")){
             return new RestFilesClient(URI.create(serverURI) );
         }
         else
-            return null; //new SoapUsersClient( serverURI );
+            return null;
     }
 
     public static Files getClientFromUri(String serverURI) {
@@ -45,6 +45,6 @@ public class FilesClientFactory {
             return new RestFilesClient(URI.create(serverURI) );
         }
         else
-            return null; //new SoapUsersClient( serverURI );
+            return null;
     }
 }

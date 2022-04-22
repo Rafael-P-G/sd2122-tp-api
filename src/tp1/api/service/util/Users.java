@@ -68,7 +68,8 @@ public interface Users {
 	Result<List<User>> searchUsers(String pattern);
 
 	/**
-	 * Check if user exists.
+	 * Checks if user exists in the system.
+	 *
 	 * @param userId the userId of the user
 	 * @return 200 the user object, if the userId exists and password matches the existing
 	 *         password
