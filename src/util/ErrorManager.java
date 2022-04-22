@@ -7,6 +7,10 @@ import tp1.api.service.util.Result;
 
 public class ErrorManager {
 
+    /*
+    This class serves as a general translator for managing differences in errorCodes between services and Results
+     */
+
     public static Status translateResultError(Result<?> result){
         System.out.println("translating: " + result.error());
         switch (result.error()){

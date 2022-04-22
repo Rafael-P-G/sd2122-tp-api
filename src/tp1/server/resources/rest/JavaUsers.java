@@ -15,10 +15,6 @@ import java.util.logging.Logger;
 public class JavaUsers implements Users {
     private static Logger Log = Logger.getLogger(UsersResources.class.getName());
 
-    /*
-    esta classe vai ser equivalente ao UsersResources -> vai conter a logica do programa
-     */
-
     private final Map<String,User> users = new ConcurrentHashMap<>();
 
     public JavaUsers() {}

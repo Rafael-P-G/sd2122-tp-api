@@ -17,7 +17,6 @@ public class RESTDirServer {
 
     private static Logger Log = Logger.getLogger(RESTDirServer.class.getName());
 
-    //TODO complete class 57956
     public static final int PORT = 8080;
     public static final String SERVICE = "directory";
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
@@ -45,7 +44,6 @@ public class RESTDirServer {
             usersFactory = new UsersClientFactory();
             filesFactory = new FilesClientFactory();
             Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
-            //More code can be executed here...
         } catch( Exception e) {
             Log.severe(e.getMessage());
         }

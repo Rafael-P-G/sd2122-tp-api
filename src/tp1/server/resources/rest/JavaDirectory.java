@@ -191,6 +191,14 @@ public class JavaDirectory implements Directory {
         return Result.ok(new ArrayList<FileInfo>(files));
     }
 
+
+    /**
+     *Returns a List of the files which the User has access to, meaning the owned files and
+     * files that have been shared with the user
+     *
+     * @param userId
+     * @return List</FileInfo> list of all files the user has access to
+     */
     private List<FileInfo> hasAccessTo(String userId){
         List<FileInfo> result = new ArrayList<>();
         Map<String, FileInfo> uf = usersFiles.get(userId);

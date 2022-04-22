@@ -27,6 +27,9 @@ public class DirectoryResources implements RestDirectory {
     private final Directory impl = new JavaDirectory();
     private UsersClientFactory usersFactory;
     private FilesClientFactory filesFactory;
+    private static String RESTURIDESCRIPTOR = "/rest/";
+    private static String SOAPURIDESCRIPTOR = "/soap/";
+
 
     public DirectoryResources() {
         usersFactory = RESTDirServer.usersFactory;
@@ -147,22 +150,30 @@ public class DirectoryResources implements RestDirectory {
         if(result.value().isEmpty())
             return result.value();
 
+        //In order to not flood the system with clients, this map was created, where key = serverURI and value = Client,
+        // if a FileInfo has a URI that is already being used by a client, the operation will be executed on that client.
         Map<String, Files> clientMap = new ConcurrentHashMap<>();
-        for (FileInfo file: result.value()) {
-            StringBuilder sb = new StringBuilder(file.getFileURL());
-            System.out.println("Original fileURL: " + sb);
-            int lastIndexOfUri = sb.lastIndexOf("/rest/");
-            if(lastIndexOfUri < 0)
-                lastIndexOfUri = sb.lastIndexOf("/soap/");
 
-            String serverURI = sb.substring(0, lastIndexOfUri + 5);
+        for (FileInfo file: result.value()) { //Each file belonging to the user will be deleted, one by one
+            StringBuilder sb = new StringBuilder(file.getFileURL());
+            int sizeOfService = RESTURIDESCRIPTOR.length() - 1;
+            int lastIndexOfUri = sb.lastIndexOf(RESTURIDESCRIPTOR);
+
+            if(lastIndexOfUri < 0){
+                lastIndexOfUri = sb.lastIndexOf(SOAPURIDESCRIPTOR);
+                sizeOfService = SOAPURIDESCRIPTOR.length() - 1;
+            }
+
+            String serverURI = sb.substring(0, lastIndexOfUri + sizeOfService);
             String fileId = file.getFilename() + "_" + file.getOwner();
             Files client = clientMap.get(serverURI);
+
             if(client == null){
                 client = FilesClientFactory.getClientFromUri(serverURI);
                 if(client == null) throw new WebApplicationException(Result.ErrorCode.INTERNAL_ERROR.name());
                 clientMap.put(serverURI, client);
             }
+
             client.deleteFile(fileId, "");
         }
 

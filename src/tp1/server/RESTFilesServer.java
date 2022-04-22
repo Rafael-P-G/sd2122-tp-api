@@ -25,8 +25,6 @@ public class RESTFilesServer {
 
     public static Discovery discovery;
 
-    //TODO complete class 57956
-
     public static void main(String[] args) {
         try {
             //Debug.setLogLevel( Level.INFO, Debug.SD2122 );
@@ -43,8 +41,6 @@ public class RESTFilesServer {
             discovery = new Discovery(new InetSocketAddress(InetAddress.getLocalHost().getHostName(), PORT), SERVICE, serverURI);
             discovery.start();
             Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
-
-            //More code can be executed here...
         } catch( Exception e) {
             Log.severe(e.getMessage());
         }

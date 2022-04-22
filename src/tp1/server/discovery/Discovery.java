@@ -113,11 +113,8 @@ public class Discovery {
 						ms.receive(pkt);
 					
 						var msg = new String(pkt.getData(), 0, pkt.getLength());
-						//System.out.printf( "FROM %s (%s) : %s\n", pkt.getAddress().getCanonicalHostName(),
-								//pkt.getAddress().getHostAddress(), msg);
 						var tokens = msg.split(DELIMITER);
 						if (tokens.length == 2) { //0 is service name  and 1 is service uri
-							//TODO: to complete by recording the received information from the other node.
 							Map<String, LocalTime> serviceInfo = receivedAnnouncements.get(tokens[0]);
 							if(serviceInfo == null){
 								serviceInfo = new HashMap<>();
