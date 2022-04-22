@@ -52,17 +52,14 @@ public class JavaUsers implements Users {
         // Check if user exists
         if( user == null ) {
             Log.info("User does not exist.");
-            System.out.println("User non existent");
             return Result.error(ErrorCode.NOT_FOUND);
         }
 
         //Check if the password is correct
         if( !user.getPassword().equals( password)) {
             Log.info("Password is incorrect.");
-            System.out.println("There error is in getUser JavaUsers");
             return Result.error(ErrorCode.FORBIDDEN);
         }
-
 
         return Result.ok(user);
     }

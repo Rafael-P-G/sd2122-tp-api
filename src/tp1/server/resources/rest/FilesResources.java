@@ -59,17 +59,5 @@ public class FilesResources implements RestFiles {
             throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
 
-    /*
-    private Response.Status translateError(Result<?> result){
-        switch (result.error()){
-            case FORBIDDEN: return  Response.Status.FORBIDDEN;
-            case NOT_FOUND: return Response.Status.NOT_FOUND;
-            case CONFLICT: return Response.Status.CONFLICT;
-            case BAD_REQUEST: return Response.Status.BAD_REQUEST;
-            default: return Response.Status.INTERNAL_SERVER_ERROR;
-        }
-    }
-
-     */
 }
 

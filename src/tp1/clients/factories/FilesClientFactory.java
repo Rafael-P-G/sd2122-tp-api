@@ -39,4 +39,12 @@ public class FilesClientFactory {
         else
             return null; //new SoapUsersClient( serverURI );
     }
+
+    public static Files getClientFromUri(String serverURI) {
+        if( serverURI.endsWith("rest")){
+            return new RestFilesClient(URI.create(serverURI) );
+        }
+        else
+            return null; //new SoapUsersClient( serverURI );
+    }
 }

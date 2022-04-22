@@ -13,6 +13,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import tp1.api.FileInfo;
+import tp1.api.service.util.Result;
 
 @Path(RestDirectory.PATH)
 public interface RestDirectory {
@@ -146,6 +147,20 @@ public interface RestDirectory {
 	List<FileInfo> lsFile(@PathParam("userId") String userId, 
 			@QueryParam("password") String password);
 
-
+	/**
+	 * Delete all existing files of user ("userId").
+	 * Only the owner (userId) can delete the files.
+	 *
+	 * @param userId - id of the user.
+	 *
+	 * @return OK if success;
+	 *	   NOT_FOUND if the userId or filename does not exist.
+	 *         FORBIDDEN if the password is incorrect.
+	 * 	   BAD_REQUEST otherwise.
+	 */
+	@DELETE
+	@Path("/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	List<FileInfo> deleteAllUserFiles(@PathParam("userId") String userId);
 
 }

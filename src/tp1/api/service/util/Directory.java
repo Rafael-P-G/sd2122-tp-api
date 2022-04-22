@@ -111,5 +111,17 @@ public interface Directory {
 	 */
 	Result<List<FileInfo>> lsFile(String userId, String password);
 
-	Result<Void> deleteAllFilesFromUser(String userId);
+	/**
+	 * Delete all existing files of user ("userId").
+	 * Only the owner (userId) can delete the files.
+	 *
+	 * @param userId - id of the user.
+	 *
+	 * @return OK if success;
+	 *	   NOT_FOUND if the userId or filename does not exist.
+	 *         FORBIDDEN if the password is incorrect.
+	 * 	   BAD_REQUEST otherwise.
+	 */
+	Result<List<FileInfo>> deleteAllUserFiles(String userId);
+
 }

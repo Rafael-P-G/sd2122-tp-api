@@ -2,6 +2,7 @@ package tp1.server.resources.rest;
 
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Response;
 import tp1.api.FileInfo;
 import tp1.api.service.rest.RestDirectory;
@@ -23,10 +24,10 @@ public class DirectoryResources implements RestDirectory {
     private static Logger Log = Logger.getLogger(DirectoryResources.class.getName());
 
     private final Directory impl = new JavaDirectory();
-    private UsersClientFactory usersFactory;// = new UsersClientFactory();
-    private FilesClientFactory filesFactory;// = new FilesClientFactory();
+    private UsersClientFactory usersFactory;
+    private FilesClientFactory filesFactory;
 
-    public DirectoryResources() throws InterruptedException {
+    public DirectoryResources() {
         usersFactory = RESTDirServer.usersFactory;
         filesFactory = RESTDirServer.filesFactory;
     }
@@ -139,6 +140,40 @@ public class DirectoryResources implements RestDirectory {
         else
             throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
+
+    @Override
+    public List<FileInfo> deleteAllUserFiles(String userId) {
+        var result = impl.deleteAllUserFiles(userId);
+
+        if(result.value().isEmpty())
+            return result.value();
+
+        Map<String, Files> clientMap = new HashMap<>();
+        for (FileInfo file: result.value()) {
+            StringBuilder sb = new StringBuilder(file.getFileURL());
+            System.out.println("Original fileURL: " + sb);
+            int lastIndexOfUri = sb.lastIndexOf("/rest/");
+            if(lastIndexOfUri < 0)
+                lastIndexOfUri = sb.lastIndexOf("/soap/");
+
+            System.out.println("LastIndexOfUri: " + lastIndexOfUri);
+            String serverURI = sb.substring(0, lastIndexOfUri + 5);
+
+            String fileId = file.getFilename() + "_" + file.getOwner();
+            Files client = clientMap.get(serverURI);
+            if(client == null){
+                client = FilesClientFactory.getClientFromUri(serverURI);
+                System.out.println("FileClient: " + client);
+                System.out.println("ServerURI: " + serverURI);
+                if(client == null) throw new WebApplicationException(Result.ErrorCode.INTERNAL_ERROR.name());
+                clientMap.put(serverURI, client);
+            }
+            client.deleteFile(fileId, "");
+        }
+
+        return result.value();
+    }
+
 
 }
 

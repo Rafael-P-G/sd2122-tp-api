@@ -70,6 +70,13 @@ public class RestDirectoryClient extends RestClient implements Directory {
         });
     }
 
+    @Override
+    public Result<List<FileInfo>> deleteAllUserFiles(String userId) {
+        return super.reTry( () -> {
+            return clt_deleteAllUserFiles(userId);
+        });
+    }
+
     private Result<FileInfo> clt_writeFile(String filename, byte[] data, String userId, String password) {
 
         Response r = target.path(userId).path(filename)
@@ -150,6 +157,20 @@ public class RestDirectoryClient extends RestClient implements Directory {
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
+
+        if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
+            return Result.ok(r.readEntity(new GenericType<List<FileInfo>>() {}));
+        else
+            System.out.println("Error, HTTP error status: " + r.getStatus() );
+
+        return Result.error(ErrorManager.responseErrorToResult(r));
+    }
+
+    private Result<List<FileInfo>> clt_deleteAllUserFiles(String userId) {
+        Response r = target.path(userId)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .delete();
 
         if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok(r.readEntity(new GenericType<List<FileInfo>>() {}));

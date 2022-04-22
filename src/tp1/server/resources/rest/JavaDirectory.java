@@ -152,13 +152,13 @@ public class JavaDirectory implements Directory {
     public Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null) {
-            System.out.println("This is JavaDir: fileS is null");
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
         FileInfo file = files.get(filename);
+        System.out.println("User " + userId + " files: " + files);
+        System.out.println("File to be removed: " + file);
         if(file == null) {
-            System.out.println("This is JavaDir: file is null");
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
@@ -175,6 +175,22 @@ public class JavaDirectory implements Directory {
     @Override
     public Result<List<FileInfo>> lsFile(String userId, String password) {
         return Result.ok(hasAccessTo(userId));
+    }
+
+    @Override
+    public Result<List<FileInfo>> deleteAllUserFiles(String userId) {
+        Map<String, FileInfo> filesToRemove = usersFiles.get(userId);
+
+        if(filesToRemove == null)
+            return Result.ok(new ArrayList<FileInfo>());
+
+        filesToRemove.forEach((k, v) ->{
+            removeFileFromSharedLists(v);
+        });
+
+        var files = usersFiles.get(userId).values();
+        usersFiles.remove(userId);
+        return Result.ok(new ArrayList<FileInfo>(files));
     }
 
     private List<FileInfo> hasAccessTo(String userId){

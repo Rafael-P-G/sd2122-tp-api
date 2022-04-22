@@ -60,16 +60,6 @@ public class JavaFiles implements Files {
         File file = new File(fileId);
 
         file.delete();
-        /*
-        if(file.isFile()){
-            file.delete();
-        }else {
-            Log.info("Not a File");
-            System.out.println("This is JavaFiles: is not a file");
-            return Result.error( Result.ErrorCode.BAD_REQUEST );
-        }
-
-         */
 
         return Result.ok();
     }
@@ -79,22 +69,20 @@ public class JavaFiles implements Files {
 
         if(fileId == null){
             Log.info("fileId or data is null.");
-            System.out.println("JavaFiles: fileId is null");
             return Result.error( Result.ErrorCode.NOT_FOUND );
         }
 
         try {
             File file = new File(fileId);
             byte[] buffer = java.nio.file.Files.readAllBytes(file.toPath());
-
             return  Result.ok(buffer);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return Result.error( Result.ErrorCode.INTERNAL_ERROR );
+            return Result.error( Result.ErrorCode.NOT_FOUND );
         } catch (IOException e) {
             e.printStackTrace();
-            return Result.error( Result.ErrorCode.INTERNAL_ERROR );
+            return Result.error( Result.ErrorCode.NOT_FOUND );
         }
     }
 }

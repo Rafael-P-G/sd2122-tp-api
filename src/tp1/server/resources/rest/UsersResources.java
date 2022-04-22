@@ -6,6 +6,11 @@ import jakarta.ws.rs.WebApplicationException;
 import tp1.api.User;
 import tp1.api.service.rest.RestUsers;
 import tp1.api.service.util.Users;
+import tp1.clients.factories.DirClientFactory;
+import tp1.clients.factories.FilesClientFactory;
+import tp1.clients.factories.UsersClientFactory;
+import tp1.server.RESTDirServer;
+import tp1.server.RESTUsersServer;
 import util.ErrorManager;
 
 import java.util.HashMap;
@@ -21,9 +26,10 @@ public class UsersResources implements RestUsers {
     private static Logger Log = Logger.getLogger(UsersResources.class.getName());
 
     final Users impl = new JavaUsers();
+    private DirClientFactory dirFactory;
 
     public UsersResources() {
-
+        dirFactory = RESTUsersServer.dirFactory;
     }
 
     @Override
@@ -65,10 +71,15 @@ public class UsersResources implements RestUsers {
         Log.info("deleteUser : user = " + userId + "; pwd = " + password);
 
         var result = impl.deleteUser(userId, password);
-        if( result.isOK() )
-            return result.value();
-        else
+        if( !result.isOK() )
             throw new WebApplicationException(ErrorManager.translateResultError(result));
+
+        var dirClient = dirFactory.getClient();
+        if(dirClient != null) {
+            dirClient.deleteAllUserFiles(userId);
+        }
+
+        return result.value();
     }
 
 
@@ -91,19 +102,6 @@ public class UsersResources implements RestUsers {
         if( !result.isOK() )
             throw new WebApplicationException(ErrorManager.translateResultError(result));
     }
-
-    /*
-    private Status translateError(Result<?> result){
-        switch (result.error()){
-            case FORBIDDEN: return  Status.FORBIDDEN;
-            case NOT_FOUND: return Status.NOT_FOUND;
-            case CONFLICT: return Status.CONFLICT;
-            case BAD_REQUEST: return Status.BAD_REQUEST;
-            default: return Status.INTERNAL_SERVER_ERROR;
-        }
-    }
-     */
-
 
 }
 
