@@ -19,7 +19,7 @@ public class JavaDirectory implements Directory {
     private final Map<String, List<FileInfo>> filesUserAccess = new HashMap<>();
 
     @Override
-    public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
+    public synchronized Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
 
         if(password == null)
             return Result.error(Result.ErrorCode.FORBIDDEN);
@@ -63,7 +63,8 @@ public class JavaDirectory implements Directory {
     }
 
     @Override
-    public Result<Void> deleteFile(String filename, String userId, String password) {
+    public synchronized Result<Void> deleteFile(String filename, String userId, String password) { /*TODO synchronize method since is very simple
+                                                                                        , or...? */
 
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null) {
@@ -76,27 +77,26 @@ public class JavaDirectory implements Directory {
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
-        FileInfo fileToRemove = files.remove(filename);
-        if(fileToRemove == null){
-            System.out.println("The problem is in JavaDirectory, files.remove(filename) returned: null");
-            return Result.error(Result.ErrorCode.BAD_REQUEST);
-        }
+        //synchronized (files){ //TODO use files or usersFiles since files is a reference to usersFiles Value
+            FileInfo fileToRemove = files.remove(filename);
+            if(fileToRemove == null){
+                System.out.println("The problem is in JavaDirectory, files.remove(filename) returned: null");
+                return Result.error(Result.ErrorCode.BAD_REQUEST);
+            }
+            removeFileFromSharedLists(fileToRemove);
+        //}
 
-        removeFileFromSharedLists(fileToRemove);
         return Result.ok();
     }
 
     private void removeFileFromSharedLists(FileInfo fileToRemove) {
-
-        System.out.println(fileToRemove.getSharedWith());
         fileToRemove.getSharedWith().forEach(user ->{
-            boolean removed = filesUserAccess.get(user).remove(fileToRemove);
-            System.out.println("File " + fileToRemove.getFilename() + " was removed from " + user + "? " + removed);
+            filesUserAccess.get(user).remove(fileToRemove);
         });
     }
 
     @Override
-    public Result<Void> shareFile(String filename, String userId, String userIdShare, String password) {
+    public synchronized Result<Void> shareFile(String filename, String userId, String userIdShare, String password) {
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null)
             return Result.error(Result.ErrorCode.BAD_REQUEST);
@@ -114,14 +114,14 @@ public class JavaDirectory implements Directory {
             filesUserAccess.put(userIdShare, filesSharedWithUser);
         }
 
-        if(filesSharedWithUser.indexOf(file) < 0){
+        if(!filesSharedWithUser.contains(file)){ //filesSharedWithUser.indexOf(file) < 0
             filesSharedWithUser.add(file);
         }
         return Result.ok();
     }
 
     @Override
-    public Result<Void> unshareFile(String filename, String userId, String userIdShare, String password) {
+    public synchronized Result<Void> unshareFile(String filename, String userId, String userIdShare, String password) {
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null)
             return Result.error(Result.ErrorCode.NOT_FOUND);
@@ -149,15 +149,13 @@ public class JavaDirectory implements Directory {
     }
 
     @Override
-    public Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
+    public synchronized Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null) {
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
         FileInfo file = files.get(filename);
-        System.out.println("User " + userId + " files: " + files);
-        System.out.println("File to be removed: " + file);
         if(file == null) {
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
@@ -173,12 +171,12 @@ public class JavaDirectory implements Directory {
     }
 
     @Override
-    public Result<List<FileInfo>> lsFile(String userId, String password) {
+    public synchronized Result<List<FileInfo>> lsFile(String userId, String password) {
         return Result.ok(hasAccessTo(userId));
     }
 
     @Override
-    public Result<List<FileInfo>> deleteAllUserFiles(String userId) {
+    public synchronized Result<List<FileInfo>> deleteAllUserFiles(String userId) {
         Map<String, FileInfo> filesToRemove = usersFiles.get(userId);
 
         if(filesToRemove == null)
@@ -199,12 +197,9 @@ public class JavaDirectory implements Directory {
 
         if(uf != null){
             List<FileInfo> files = new ArrayList<>(uf.values());
-            if(files != null){
-                result.addAll(files);
-            }
+            result.addAll(files);
         }
         List<FileInfo> accesses = filesUserAccess.get(userId);
-        System.out.println("User " + userId + " has accesses to: " + accesses);
         if(accesses != null){
             result.addAll(filesUserAccess.get(userId));
         }

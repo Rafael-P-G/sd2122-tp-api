@@ -16,6 +16,7 @@ import tp1.server.RESTDirServer;
 import util.ErrorManager;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 @Singleton
@@ -81,10 +82,8 @@ public class DirectoryResources implements RestDirectory {
             throw new WebApplicationException(ErrorManager.translateResultError(checkUserResult));
 
         var checkUserShareResult = usersClient.checkUser(userIdShare);
-        if( !checkUserShareResult.isOK() ) {
-            System.out.println("LA-LI-LU-LE-LO");
+        if( !checkUserShareResult.isOK() )
             throw new WebApplicationException(ErrorManager.translateResultError(checkUserShareResult));
-        }
 
         var result = impl.shareFile(filename, userId, userIdShare, password);
         if( !result.isOK() )
@@ -148,7 +147,7 @@ public class DirectoryResources implements RestDirectory {
         if(result.value().isEmpty())
             return result.value();
 
-        Map<String, Files> clientMap = new HashMap<>();
+        Map<String, Files> clientMap = new ConcurrentHashMap<>();
         for (FileInfo file: result.value()) {
             StringBuilder sb = new StringBuilder(file.getFileURL());
             System.out.println("Original fileURL: " + sb);
@@ -156,15 +155,11 @@ public class DirectoryResources implements RestDirectory {
             if(lastIndexOfUri < 0)
                 lastIndexOfUri = sb.lastIndexOf("/soap/");
 
-            System.out.println("LastIndexOfUri: " + lastIndexOfUri);
             String serverURI = sb.substring(0, lastIndexOfUri + 5);
-
             String fileId = file.getFilename() + "_" + file.getOwner();
             Files client = clientMap.get(serverURI);
             if(client == null){
                 client = FilesClientFactory.getClientFromUri(serverURI);
-                System.out.println("FileClient: " + client);
-                System.out.println("ServerURI: " + serverURI);
                 if(client == null) throw new WebApplicationException(Result.ErrorCode.INTERNAL_ERROR.name());
                 clientMap.put(serverURI, client);
             }

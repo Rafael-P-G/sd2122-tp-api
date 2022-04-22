@@ -2,16 +2,9 @@ package tp1.server.resources.rest;
 
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
 import tp1.api.service.rest.RestFiles;
-import tp1.api.service.util.Result;
 import util.ErrorManager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;

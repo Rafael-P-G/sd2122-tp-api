@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class JavaUsers implements Users {
@@ -18,7 +19,7 @@ public class JavaUsers implements Users {
     esta classe vai ser equivalente ao UsersResources -> vai conter a logica do programa
      */
 
-    private final Map<String,User> users = new HashMap<>();
+    private final Map<String,User> users = new ConcurrentHashMap<>();
 
     public JavaUsers() {}
 

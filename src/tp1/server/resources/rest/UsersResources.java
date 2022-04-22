@@ -7,21 +7,14 @@ import tp1.api.User;
 import tp1.api.service.rest.RestUsers;
 import tp1.api.service.util.Users;
 import tp1.clients.factories.DirClientFactory;
-import tp1.clients.factories.FilesClientFactory;
-import tp1.clients.factories.UsersClientFactory;
-import tp1.server.RESTDirServer;
 import tp1.server.RESTUsersServer;
 import util.ErrorManager;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @Singleton
 public class UsersResources implements RestUsers {
-
-    private final Map<String,User> users = new HashMap<>();
 
     private static Logger Log = Logger.getLogger(UsersResources.class.getName());
 

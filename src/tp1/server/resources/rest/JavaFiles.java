@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class JavaFiles implements Files {
@@ -20,7 +18,7 @@ public class JavaFiles implements Files {
     }
 
     @Override
-    public Result<Void> writeFile(String fileId, byte[] data, String token) {
+    public synchronized Result<Void> writeFile(String fileId, byte[] data, String token) {
         Log.info("deleteFile : file = " + fileId);
 
         Log.info("WriteFile : " + fileId);
@@ -47,13 +45,12 @@ public class JavaFiles implements Files {
     }
 
     @Override
-    public Result<Void> deleteFile(String fileId, String token) {
+    public synchronized Result<Void> deleteFile(String fileId, String token) {
 
         Log.info("deleteFile : file = " + fileId);
 
         if(fileId == null){
             Log.info("fileId or data is null.");
-            System.out.println("This is JavaFiles: fileId is null");
             return Result.error( Result.ErrorCode.NOT_FOUND );
         }
 
@@ -65,7 +62,7 @@ public class JavaFiles implements Files {
     }
 
     @Override
-    public Result<byte[]> getFile(String fileId, String token) {
+    public synchronized Result<byte[]> getFile(String fileId, String token) {
 
         if(fileId == null){
             Log.info("fileId or data is null.");
