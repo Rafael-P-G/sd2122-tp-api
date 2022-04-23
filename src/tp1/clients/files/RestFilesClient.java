@@ -74,13 +74,11 @@ public class RestFilesClient extends RestClient implements Files {
     }
 
     private Result<byte[]> clt_getFile(String fileId, String token) {
-        System.out.println("Getting File: " + fileId);
         Response r = target.path( fileId)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
 
-        System.out.println("Response: " + r);
         if( ErrorManager.translateResponseStatus(r.getStatus()) == Response.Status.OK.getStatusCode() && r.hasEntity() )
             return Result.ok();
         else
@@ -88,4 +86,5 @@ public class RestFilesClient extends RestClient implements Files {
 
         return Result.error(ErrorManager.responseErrorToResult(r));
     }
+
 }

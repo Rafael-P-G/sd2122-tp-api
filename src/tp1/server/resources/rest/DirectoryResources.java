@@ -13,7 +13,9 @@ import tp1.api.service.util.Users;
 import tp1.clients.factories.FilesClientFactory;
 import tp1.clients.factories.UsersClientFactory;
 import tp1.server.RESTDirServer;
+import tp1.server.RESTFilesServer;
 import util.ErrorManager;
+import util.UrlParser;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,8 +29,8 @@ public class DirectoryResources implements RestDirectory {
     private final Directory impl = new JavaDirectory();
     private UsersClientFactory usersFactory;
     private FilesClientFactory filesFactory;
-    private static String RESTURIDESCRIPTOR = "/rest/";
-    private static String SOAPURIDESCRIPTOR = "/soap/";
+    private static final String RESTURIDESCRIPTOR = "/rest/";
+    private static final String SOAPURIDESCRIPTOR = "/soap/";
 
 
     public DirectoryResources() {
@@ -43,18 +45,20 @@ public class DirectoryResources implements RestDirectory {
         if( !checkUserResult.isOK() )
             throw new WebApplicationException(ErrorManager.translateResultError(checkUserResult));
 
-        String fileId = filename + "_" + userId;
-        var filesClient = filesFactory.getClient();
-        var writeFileResult = filesClient.writeFile(fileId, data, "");
-        if( !writeFileResult.isOK() )
-            throw new WebApplicationException(ErrorManager.translateResultError(writeFileResult));
-
         var result = impl.writeFile(filename, data, userId, password);
-        if( result.isOK() )
-            return result.value();
-        else
+        if( !result.isOK() )
             throw new WebApplicationException(ErrorManager.translateResultError(result));
 
+        String fileId = filename + "_" + userId;
+        String fileUri = UrlParser.extractFileURIFromURL(result.value().getFileURL()); //extractFileURI(result.value());
+        var filesClient = filesFactory.getClientFromUri(fileUri);
+        var writeFileResult = filesClient.writeFile(fileId, data, "");
+        if(writeFileResult == null || !writeFileResult.isOK()) {
+            impl.deleteFile(filename, userId, password);
+            throw new WebApplicationException(ErrorManager.translateResultError(writeFileResult));
+        }
+
+        return result.value();
     }
 
     @Override
@@ -155,16 +159,7 @@ public class DirectoryResources implements RestDirectory {
         Map<String, Files> clientMap = new ConcurrentHashMap<>();
 
         for (FileInfo file: result.value()) { //Each file belonging to the user will be deleted, one by one
-            StringBuilder sb = new StringBuilder(file.getFileURL());
-            int sizeOfService = RESTURIDESCRIPTOR.length() - 1;
-            int lastIndexOfUri = sb.lastIndexOf(RESTURIDESCRIPTOR);
-
-            if(lastIndexOfUri < 0){
-                lastIndexOfUri = sb.lastIndexOf(SOAPURIDESCRIPTOR);
-                sizeOfService = SOAPURIDESCRIPTOR.length() - 1;
-            }
-
-            String serverURI = sb.substring(0, lastIndexOfUri + sizeOfService);
+            String serverURI = UrlParser.extractFileURIFromURL(file.getFileURL()); //extractFileURI(file);
             String fileId = file.getFilename() + "_" + file.getOwner();
             Files client = clientMap.get(serverURI);
 
@@ -179,6 +174,7 @@ public class DirectoryResources implements RestDirectory {
 
         return result.value();
     }
+
 
 
 }

@@ -12,7 +12,6 @@ public class ErrorManager {
      */
 
     public static Status translateResultError(Result<?> result){
-        System.out.println("translating: " + result.error());
         switch (result.error()){
             case OK: return Response.Status.OK;
             case FORBIDDEN: return  Response.Status.FORBIDDEN;

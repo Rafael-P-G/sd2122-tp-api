@@ -5,11 +5,10 @@ import jakarta.ws.rs.core.Response;
 import tp1.api.FileInfo;
 import tp1.api.service.util.Directory;
 import tp1.api.service.util.Result;
-import tp1.clients.files.RestFilesClient;
 import tp1.server.RESTDirServer;
 import tp1.server.RESTFilesServer;
+import util.UrlParser;
 
-import java.io.File;
 import java.net.URI;
 import java.util.*;
 
@@ -34,12 +33,12 @@ public class JavaDirectory implements Directory {
             files = new HashMap<>();
             usersFiles.put(userId, files);
 
-            file = createNewFile(filename, userId);
+            file = createNewFileInfo(filename, userId);
         }
         else {
             file = files.get(filename);
             if(file == null){
-                file = createNewFile(filename, userId);
+                file = createNewFileInfo(filename, userId);
             }
             else {
 
@@ -51,21 +50,63 @@ public class JavaDirectory implements Directory {
         }
         files.put(filename, file);
 
+        //incrementFileNmr(file);
+
         return Result.ok(file);
     }
 
-    private FileInfo createNewFile(String filename, String userId) {
-        String fileURL = RESTDirServer.discovery.getEmptiestFileURI();
+    private FileInfo createNewFileInfo(String filename, String userId) {
+        String fileURI = getEmptiestFileURI();
+        /*
+        var wrapper = new Object(){String uri; int min = Collections.min(nmrFilesInUris.values());;};
+        nmrFilesInUris.forEach((k, v) ->{
+            if(v == wrapper.min) {
+                wrapper.uri = k;
+            }
+        });
+        String fileURI = wrapper.uri;
+         */
         return new FileInfo(userId,
                 filename,
-                fileURL + "/" + RESTFilesServer.SERVICE + "/" + filename + "_" + userId,
+                fileURI + "/" + RESTFilesServer.SERVICE + "/" + filename + "_" + userId,
                 new HashSet<>());
     }
 
-    @Override
-    public synchronized Result<Void> deleteFile(String filename, String userId, String password) { /*TODO synchronize method since is very simple
-                                                                                        , or...? */
+    private String getEmptiestFileURI() {
+        Map<String, Integer> nmrFilesInUris = new HashMap<>();
+        Set<String> knownUris = RESTDirServer.discovery.knownUrisOf(RESTFilesServer.SERVICE).keySet();
+        for (String uri: knownUris) {
+            nmrFilesInUris.put(uri, 0);
+        }
 
+        usersFiles.values().forEach(filesMaps -> {
+            filesMaps.values().forEach(file ->{
+                String uri = UrlParser.extractFileURIFromURL(file.getFileURL());
+                if(knownUris.contains(uri)){
+                    nmrFilesInUris.put(uri, nmrFilesInUris.get(uri) + 1);
+                }
+            });
+        });
+
+        Iterator<String> it = knownUris.iterator();
+        String emptiestUri;
+        if(it.hasNext())
+            emptiestUri = it.next();
+        else
+            return null;
+
+        System.out.println("Empties Uri: " + emptiestUri);
+        while (it.hasNext()){
+            String next = it.next();
+            if(nmrFilesInUris.get(next) < nmrFilesInUris.get(emptiestUri))
+                emptiestUri = next;
+        }
+
+        return emptiestUri;
+    }
+
+    @Override
+    public synchronized Result<Void> deleteFile(String filename, String userId, String password) {
         Map<String, FileInfo> files = usersFiles.get(userId);
         if(files == null) {
             System.out.println("This is JavaDirectory: files is null");
@@ -77,14 +118,13 @@ public class JavaDirectory implements Directory {
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
-        //synchronized (files){ //TODO use files or usersFiles since files is a reference to usersFiles Value
-            FileInfo fileToRemove = files.remove(filename);
-            if(fileToRemove == null){
-                System.out.println("The problem is in JavaDirectory, files.remove(filename) returned: null");
-                return Result.error(Result.ErrorCode.BAD_REQUEST);
-            }
-            removeFileFromSharedLists(fileToRemove);
-        //}
+        FileInfo fileToRemove = files.remove(filename);
+        if(fileToRemove == null){
+            System.out.println("The problem is in JavaDirectory, files.remove(filename) returned: null");
+            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
+
+        removeFileFromSharedLists(fileToRemove);
 
         return Result.ok();
     }
@@ -213,4 +253,5 @@ public class JavaDirectory implements Directory {
         }
         return result;
     }
+
 }

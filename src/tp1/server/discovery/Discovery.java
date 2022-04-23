@@ -1,13 +1,7 @@
 package tp1.server.discovery;
 
-import tp1.server.RESTDirServer;
-import tp1.server.RESTFilesServer;
-import tp1.server.RESTUsersServer;
-
 import java.io.IOException;
 import java.net.*;
-import java.sql.Time;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.Logger;
@@ -47,7 +41,6 @@ public class Discovery {
 	private String serviceURI;
 
 	private Map<String, Map<String, LocalTime>> receivedAnnouncements;
-	private Map<String, Boolean> fileURIs;
 
 	/**
 	 * @param  serviceName the name of the service to announce
@@ -59,9 +52,6 @@ public class Discovery {
 		this.serviceURI  = serviceURI;
 
 		receivedAnnouncements = new HashMap<String, Map<String, LocalTime>>();
-
-		if(serviceName == RESTDirServer.SERVICE)
-			fileURIs = new HashMap<>();
 	}
 	
 	/**
@@ -122,9 +112,7 @@ public class Discovery {
 							serviceInfo.put(tokens[1], LocalTime.now());
 							receivedAnnouncements.put(tokens[0], serviceInfo);
 
-							if(fileURIs != null && tokens[0].equals(RESTFilesServer.SERVICE)){
-								fileURIs.put(tokens[1], false);
-							}
+
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -182,28 +170,6 @@ public class Discovery {
 		return bestURIWrapper.bestURI;
 	}
 
-	public String getEmptiestFileURI(){
-		if(fileURIs == null) return null;
-
-		int dirtyUris = 0;
-		String uri = null;
-		Set<Map.Entry<String, Boolean>> uris = fileURIs.entrySet();
-		for (Map.Entry<String, Boolean> set : uris){
-			if(!set.getValue()) {
-				uri = set.getKey();
-				break;
-			}
-			else
-				dirtyUris++;
-		}
-
-		if(dirtyUris == uris.size()){
-			fileURIs.replaceAll((k,v) -> v = false);
-		}
-
-		return uri;
-	}
-
 	private void joinGroupInAllInterfaces(MulticastSocket ms) throws SocketException {
 		Enumeration<NetworkInterface> ifs = NetworkInterface.getNetworkInterfaces();
 		while (ifs.hasMoreElements()) {
@@ -219,9 +185,28 @@ public class Discovery {
 	/**
 	 * Starts sending service announcements at regular intervals... 
 	 */
-	public void start() {
+	public void start() throws InterruptedException {
 		announce(serviceName, serviceURI);
 		listener();
+		cleanTimedOutAnnouncements();
+	}
+
+	private void cleanTimedOutAnnouncements() throws InterruptedException {
+		new Thread(() -> {
+			for(;;){
+				for (Map<String, LocalTime> servMap: receivedAnnouncements.values()) {
+					for (String uri: servMap.keySet()) {
+
+						int time = servMap.get(uri).toSecondOfDay();
+						int diff= LocalTime.now().toSecondOfDay() - time;
+
+						if(diff > DISCOVERY_TIMEOUT/1000){
+							servMap.remove(uri);
+						}
+					}
+				}
+			}
+		}).start();
 	}
 
 	// Main just for testing purposes
