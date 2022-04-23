@@ -150,10 +150,10 @@ public class Discovery {
 	 * 
 	 */
 	public Map<String, LocalTime> knownUrisOf(String serviceName) {
-		//System.out.println(receivedAnnouncements);
 		Map<String, LocalTime> announcements = receivedAnnouncements.get(serviceName);
 		return announcements;
 	}
+
 	public String getOptimalURI(String serviceName){
 
 		Map<String, LocalTime> urisFiles = knownUrisOf(serviceName);
