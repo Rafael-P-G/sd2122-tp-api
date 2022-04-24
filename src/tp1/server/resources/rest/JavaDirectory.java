@@ -11,6 +11,8 @@ import util.UrlParser;
 
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JavaDirectory implements Directory {
 
@@ -45,41 +47,36 @@ public class JavaDirectory implements Directory {
                 file.setFilename(filename);
                 file.setOwner(userId);
                 file.setSharedWith(file.getSharedWith());
-                file.setFileURL(file.getFileURL());
+                file.setFileURL(createUrl(getEmptiestFileURI(), file.getFilename(), file.getOwner()));
             }
         }
-        files.put(filename, file);
 
-        //incrementFileNmr(file);
+        files.put(filename, file);
 
         return Result.ok(file);
     }
 
     private FileInfo createNewFileInfo(String filename, String userId) {
         String fileURI = getEmptiestFileURI();
-        /*
-        var wrapper = new Object(){String uri; int min = Collections.min(nmrFilesInUris.values());;};
-        nmrFilesInUris.forEach((k, v) ->{
-            if(v == wrapper.min) {
-                wrapper.uri = k;
-            }
-        });
-        String fileURI = wrapper.uri;
-         */
         return new FileInfo(userId,
                 filename,
-                fileURI + "/" + RESTFilesServer.SERVICE + "/" + filename + "_" + userId,
+                createUrl(fileURI, filename, userId),
                 new HashSet<>());
     }
 
+    private String createUrl(String uri, String filename, String userId){
+        return uri + "/" + RESTFilesServer.SERVICE + "/" + filename + "_" + userId;
+    }
+
     private String getEmptiestFileURI() {
-        Map<String, Integer> nmrFilesInUris = new HashMap<>();
+        Map<String, Integer> nmrFilesInUris = new ConcurrentHashMap<>();
         Set<String> knownUris = RESTDirServer.discovery.knownUrisOf(RESTFilesServer.SERVICE).keySet();
         for (String uri: knownUris) {
             nmrFilesInUris.put(uri, 0);
         }
 
-        usersFiles.values().forEach(filesMaps -> {
+        List<Map<String, FileInfo>> usersFilesCopy = new CopyOnWriteArrayList(usersFiles.values());
+        usersFilesCopy.forEach(filesMaps -> {
             filesMaps.values().forEach(file ->{
                 String uri = UrlParser.extractFileURIFromURL(file.getFileURL());
                 if(knownUris.contains(uri)){
@@ -95,7 +92,6 @@ public class JavaDirectory implements Directory {
         else
             return null;
 
-        System.out.println("Empties Uri: " + emptiestUri);
         while (it.hasNext()){
             String next = it.next();
             if(nmrFilesInUris.get(next) < nmrFilesInUris.get(emptiestUri))
@@ -118,21 +114,22 @@ public class JavaDirectory implements Directory {
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
-        FileInfo fileToRemove = files.remove(filename);
-        if(fileToRemove == null){
-            System.out.println("The problem is in JavaDirectory, files.remove(filename) returned: null");
-            return Result.error(Result.ErrorCode.BAD_REQUEST);
-        }
-
-        removeFileFromSharedLists(fileToRemove);
+        //synchronized (usersFiles){
+            FileInfo fileToRemove = files.remove(filename);
+            if(fileToRemove == null){
+                System.out.println("The problem is in JavaDirectory, files.remove(filename) returned: null");
+                return Result.error(Result.ErrorCode.BAD_REQUEST);
+            }
+            removeFileFromSharedLists(fileToRemove);
+        //}
 
         return Result.ok();
     }
 
     private void removeFileFromSharedLists(FileInfo fileToRemove) {
-        fileToRemove.getSharedWith().forEach(user ->{
-            filesUserAccess.get(user).remove(fileToRemove);
-        });
+            fileToRemove.getSharedWith().forEach(user ->{
+                filesUserAccess.get(user).remove(fileToRemove);
+            });
     }
 
     @Override

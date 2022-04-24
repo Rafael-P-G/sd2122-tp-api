@@ -29,8 +29,6 @@ public class DirectoryResources implements RestDirectory {
     private final Directory impl = new JavaDirectory();
     private UsersClientFactory usersFactory;
     private FilesClientFactory filesFactory;
-    private static final String RESTURIDESCRIPTOR = "/rest/";
-    private static final String SOAPURIDESCRIPTOR = "/soap/";
 
 
     public DirectoryResources() {
@@ -50,16 +48,30 @@ public class DirectoryResources implements RestDirectory {
             throw new WebApplicationException(ErrorManager.translateResultError(result));
 
         String fileId = filename + "_" + userId;
-        String fileUri = UrlParser.extractFileURIFromURL(result.value().getFileURL()); //extractFileURI(result.value());
+        String fileUri = UrlParser.extractFileURIFromURL(result.value().getFileURL());
         var filesClient = filesFactory.getClientFromUri(fileUri);
         var writeFileResult = filesClient.writeFile(fileId, data, "");
+
         if(writeFileResult == null || !writeFileResult.isOK()) {
-            impl.deleteFile(filename, userId, password);
-            throw new WebApplicationException(ErrorManager.translateResultError(writeFileResult));
+            if(RESTDirServer.discovery.knownUrisOf(RESTFilesServer.SERVICE).size() < 2){
+                impl.deleteFile(filename, userId, password);
+                throw new WebApplicationException(ErrorManager.translateResultError(writeFileResult));
+            }else{
+                result = impl.writeFile(filename, data, userId, password);
+                fileUri = UrlParser.extractFileURIFromURL(result.value().getFileURL());
+                filesClient = filesFactory.getClientFromUri(fileUri);
+                writeFileResult = filesClient.writeFile(fileId, data, "");
+                if(writeFileResult == null || !writeFileResult.isOK()){
+                    impl.deleteFile(filename, userId, password);
+                    throw new WebApplicationException(ErrorManager.translateResultError(writeFileResult));
+                }
+            }
         }
 
         return result.value();
     }
+
+
 
     @Override
     public void deleteFile(String filename, String userId, String password) {
